@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Funny Screen Touch</string>	
+    <string name="starButton">Start</string>
+    <string name="exitButton">Exit</string>
+</resources>
