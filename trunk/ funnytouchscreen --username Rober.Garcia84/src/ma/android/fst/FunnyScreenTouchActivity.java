@@ -93,14 +93,14 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
         		
 	        	buttons[i][n] = new Button(this);
 	        	buttons[i][n].setOnClickListener(this);
-	        	//buttons[i][n].setBackgroundResource(buttonBackground[random.nextInt(8)]);  
+	        	buttons[i][n].setBackgroundResource(buttonBackground[random.nextInt(8)]);  
 	        	
-	        	ImageButton ib = new ImageButton(this);
+	        	/*ImageButton ib = new ImageButton(this);
 	        	ib.setBackgroundResource(R.drawable.button1);
 	        	ib.setImageResource(R.drawable.dot2);
+	        	*/
 	        	
-	        	
-	        	absLayout.addView(ib,new LayoutParams(squareSizeX,squareSizeY,posX,posY));
+	        	absLayout.addView(buttons[i][n],new LayoutParams(squareSizeX,squareSizeY,posX,posY));
 	        }
         }
         this.setContentView(absLayout);
