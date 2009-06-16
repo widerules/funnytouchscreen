@@ -44,6 +44,17 @@ public class AnimationFactory {
 		int movementAnimation = random.nextInt(3);
 		int effectAnimation = random.nextInt(2);
 
+		switch (effectAnimation)
+		{
+			case 0: set.addAnimation(AnimationFactory.rotatingElement(0f, 360f,
+		            Animation.RELATIVE_TO_SELF, 0.5f,
+		            Animation.RELATIVE_TO_SELF, 0.5f,ANIMATION_DURATION/4,3,Animation.REVERSE));
+					break;
+			
+			case 1: set.addAnimation(AnimationFactory.fadingElement(1.0f, 0.0f, ANIMATION_DURATION/4, 3, Animation.REVERSE));
+					break;	
+		}
+		
 		switch (movementAnimation)
 		{
 			case 0: startPosition.x = 0;
@@ -61,18 +72,7 @@ public class AnimationFactory {
 					set.addAnimation(AnimationFactory.growingElement(1/3,3,1/3,3,imageWidth/2,imageHeight/2,ANIMATION_DURATION, 0, 0));
 					break;	
 		}
-		
-		switch (effectAnimation)
-		{
-			case 0: set.addAnimation(AnimationFactory.rotatingElement(0f, 360f,
-		            Animation.RELATIVE_TO_SELF, 0.5f,
-		            Animation.RELATIVE_TO_SELF, 0.5f,ANIMATION_DURATION/4,3,Animation.REVERSE));
-					break;
-			
-			case 1: set.addAnimation(AnimationFactory.fadingElement(1.0f, 0.0f, ANIMATION_DURATION/4, 3, Animation.REVERSE));
-					break;	
-		}
-		
+
 		fa.setAnimation(set);
 		fa.setStartPosition(startPosition);
 		
@@ -166,4 +166,3 @@ public class AnimationFactory {
 		return starAlongSides;
 	}
 }
-
