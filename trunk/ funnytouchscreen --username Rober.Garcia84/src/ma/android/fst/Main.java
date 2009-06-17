@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -25,16 +26,17 @@ import android.widget.TextView;
 
 public class Main extends Activity implements OnClickListener{
 
-	public static final int PADDING = 5;
+	public static final int ROW_PADDING = 5;
+	public static final int LAYOUR_PADDING = 5;
 	public static final int ROWS = 5;
 	public static final int COLUMNS = 3;
 	public static final int SEPARATOR_SIZE = 5;
 	
 	private int width;
 	private int height;
+	private boolean musicEnabled;
+	private ArrayList<Button> buttons = new ArrayList<Button>();
 	
-	private TableLayout menu;
-	private TableRow [] rows;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -46,177 +48,131 @@ public class Main extends Activity implements OnClickListener{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN); 
         
-        //setContentView(R.layout.main);
-        //Button startButton = (Button) findViewById(R.id.startButton); 
-        //startButton.setOnClickListener(this);
+        setContentView(R.layout.main);
         
-        /*WindowManager w = getWindowManager();
+        musicEnabled = true;
+        
+        Button airplaneMode = (Button) findViewById(R.id.airplaneMode); 
+        buttons.add(airplaneMode);
+        Button g1L1 = (Button)findViewById(R.id.game1Level1); 
+        buttons.add(g1L1);
+        Button g1L2 = (Button)findViewById(R.id.game1Level2);
+        buttons.add(g1L2);
+        Button g1L3 = (Button)findViewById(R.id.game1Level3);
+        buttons.add(g1L3);
+        Button g1L4 = (Button)findViewById(R.id.game1Level4);
+        buttons.add(g1L4);
+        Button g2L1 = (Button)findViewById(R.id.game2Level1);
+        buttons.add(g2L1);
+        Button g2L2 = (Button)findViewById(R.id.game2Level2);
+        buttons.add(g2L2);
+        Button g2L3 = (Button)findViewById(R.id.game2Level3);
+        buttons.add(g2L3);
+        Button g2L4 = (Button)findViewById(R.id.game2Level4);
+        buttons.add(g2L4);
+        Button about = (Button)findViewById(R.id.about);
+        buttons.add(about);
+        Button music = (Button)findViewById(R.id.music);
+        buttons.add(music);
+        
+        airplaneMode.setOnClickListener(this);
+        g1L1.setOnClickListener(this);
+        g1L2.setOnClickListener(this);
+        g1L3.setOnClickListener(this);
+        g1L4.setOnClickListener(this);
+        g2L1.setOnClickListener(this);
+        g2L2.setOnClickListener(this);
+        g2L3.setOnClickListener(this);
+        g2L4.setOnClickListener(this);
+        about.setOnClickListener(this);
+        music.setOnClickListener(this);
+       
+        boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
+              Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+        
+        if (isEnabledAirplaneMode){
+        	airplaneMode.setText(R.string.off);
+        }
+        else{
+        	airplaneMode.setText(R.string.on);
+        }
+        
+        music.setText(R.string.off);
+        
+        WindowManager w = getWindowManager();
         Display d = w.getDefaultDisplay();
 
         width = d.getWidth();
-        height = d.getHeight();//-45;
+        height = d.getHeight();
         
-        menu = new TableLayout(this);
-        menu.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.FILL_PARENT
-            ));
+        TextView text = (TextView) findViewById(R.id.game1Level1);
+        int textHeight = 20;//text.getMeasuredHeight(); 
+        int leftWidth = width - (ROW_PADDING * 2 + LAYOUR_PADDING * 2 * 3);
+        int leftHeight = height - (ROW_PADDING * 2 * 5 + LAYOUR_PADDING * 2 * 5 + 5 + textHeight);
         
-        int rowHeight = (height - PADDING * 3) / 5;
-        int rowWidth = width;
+        int buttonSizeX = leftWidth / 3;
+        int buttonSizeY = leftHeight / 5;
         
-        int buttonSizeX = (rowWidth - SEPARATOR_SIZE *2 - PADDING * 3)/3;
-        int buttonSizeY = rowHeight - PADDING * 2 ;
-        
-        ArrayList<View> rowList = new ArrayList<View>();
-        
-        rowList.add(createRow(buttonSizeX, buttonSizeY, this));
-        rowList.add(createRow(buttonSizeX, buttonSizeY, this));
-        rowList.add(createRow(buttonSizeX, buttonSizeY, this));
-        rowList.add(createRow(buttonSizeX, buttonSizeY, this));
-        rowList.add(createSpacer(width, PADDING,this));
-        rowList.add(createFinalRow(buttonSizeX, buttonSizeY, this));
-        //rowList.add(createFinalRow(buttonSizeX, buttonSizeY, this));
-        
-        for (View row : rowList) {
-        	
-        	row.setLayoutParams(new TableLayout.LayoutParams(
-        	          TableLayout.LayoutParams.WRAP_CONTENT,
-        	          TableLayout.LayoutParams.WRAP_CONTENT
-        	      ));
-
-			menu.addView(row);
-		}*/
-        this.setContentView(R.layout.main);        
+        for (Button button : buttons) {
+        	button.setMinimumWidth(buttonSizeX);
+			button.setMinHeight(buttonSizeY);
+		}
 	}
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		/*Button pressed = (Button)v;
+		Button pressed = (Button)v;
+		boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
+	              Settings.System.AIRPLANE_MODE_ON, 0) == 1;
 		switch (pressed.getId())
 		{
-			case R.id.startButton:launchActivity();
-		}*/
+			case R.id.airplaneMode:	if (isEnabledAirplaneMode){
+										Settings.System.putInt(getContentResolver(),
+									      		Settings.System.AIRPLANE_MODE_ON,0);
+										pressed.setText(R.string.on);
+									}
+									else{
+										Settings.System.putInt(getContentResolver(),
+									      		Settings.System.AIRPLANE_MODE_ON,1);
+										pressed.setText(R.string.off);
+									}
+									break;
+									
+			case R.id.game1Level1: 	launchActivity(1,0);
+									break;
+			case R.id.game1Level2: 	launchActivity(1,1);
+									break;
+			case R.id.game1Level3: 	launchActivity(1,2);
+									break;
+			case R.id.game1Level4: 	launchActivity(1,3);
+									break;
+			case R.id.game2Level1: 	launchActivity(1,0);
+									break;
+			case R.id.game2Level2: 	launchActivity(1,1);
+									break;
+			case R.id.game2Level3: 	launchActivity(1,2);
+									break;
+			case R.id.game2Level4: 	launchActivity(1,3);
+									break;
+			case R.id.about:		break;
+			
+			case R.id.music:		if (musicEnabled){
+										pressed.setText(R.string.on);
+										musicEnabled = false;
+									}
+									else{
+										pressed.setText(R.string.off);
+										musicEnabled = true;
+									}
+									break;
+		}
 	}
-	public void launchActivity()
+	public void launchActivity(int game, int level)
 	{
 		Intent i = new Intent(this, FunnyScreenTouchActivity.class);
         i.putExtra("squareNumberX",1);
         i.putExtra("squareNumberY", 2);
         i.putExtra("repeats",0);
-        i.putExtra("level",3);
+        i.putExtra("level",level);
     	startActivity(i);
 	}
-	public static TableRow createRow(int buttonSizeX, int buttonSizeY,Context activity) 
-	{
-		  TableRow row = new TableRow(activity);
-		  
-		  LinearLayout l1 = new LinearLayout(activity);
-		  l1.setPadding(PADDING, PADDING, PADDING, PADDING);
-		  
-		  LinearLayout l2 = new LinearLayout(activity);
-		  l2.setPadding(PADDING, PADDING, PADDING, PADDING);
-		  
-		  View emptySpace = new View(activity);
-		  emptySpace.setMinimumWidth(buttonSizeX);
-		  emptySpace.setMinimumHeight(buttonSizeY);
-		  emptySpace.setLayoutParams(new TableRow.LayoutParams(
-		          TableRow.LayoutParams.FILL_PARENT,
-		          TableRow.LayoutParams.FILL_PARENT
-		      ));
-		  
-		  View spacer = new View(activity);
-		  spacer.setBackgroundColor(Color.argb(200, 226, 226, 226));
-		  spacer.setMinimumWidth(5);
-		  spacer.setMinimumHeight(buttonSizeY);
-		  spacer.setLayoutParams(new TableRow.LayoutParams(
-		          TableRow.LayoutParams.FILL_PARENT,
-		          TableRow.LayoutParams.FILL_PARENT
-		      ));
- 
-		  Button button = new Button(activity);
-		  button.setBackgroundResource(R.drawable.button1);
-		  button.setMinimumWidth(buttonSizeX);
-		  button.setMinimumHeight(buttonSizeY);
-		  button.setLayoutParams(new TableRow.LayoutParams(
-		          TableRow.LayoutParams.WRAP_CONTENT,
-		          TableRow.LayoutParams.WRAP_CONTENT
-		      ));
-		  l1.addView(button);
-
-		  View spacer2 = new View(activity);
-		  spacer2.setBackgroundColor(Color.argb(200, 226, 226, 226));
-		  spacer2.setMinimumWidth(5);
-		  spacer2.setMinimumHeight(buttonSizeY);
-		  spacer2.setLayoutParams(new TableRow.LayoutParams(
-		          TableRow.LayoutParams.FILL_PARENT,
-		          TableRow.LayoutParams.FILL_PARENT
-		      ));
-		    
-		  Button button2 = new Button(activity);
-		  button2.setBackgroundResource(R.drawable.button1);
-		  button2.setMinimumWidth(buttonSizeX);
-		  button2.setMinimumHeight(buttonSizeY);
-		  button2.setLayoutParams(new TableRow.LayoutParams(
-		          TableRow.LayoutParams.WRAP_CONTENT,
-		          TableRow.LayoutParams.WRAP_CONTENT
-		      ));
-		  l2.addView(button2);
-		  
-		  row.addView(emptySpace);
-		  row.addView(spacer);
-		  row.addView(l1);
-		  row.addView(spacer2);
-		  row.addView(l2);
-		  return row;
-	}
-	public static TableRow createFinalRow(int buttonSizeX, int buttonSizeY,Context activity) 
-	{
-		  TableRow row = new TableRow(activity);
-		  
-		  LinearLayout l1 = new LinearLayout(activity);
-		  l1.setPadding(PADDING, PADDING, PADDING, PADDING);
-		  
-		  LinearLayout l2 = new LinearLayout(activity);
-		  l2.setPadding(PADDING, PADDING, PADDING, PADDING);
-
-		  Button button = new Button(activity);
-		  button.setBackgroundResource(R.drawable.button1);
-		  button.setMinimumWidth(buttonSizeX);
-		  button.setMinimumHeight(buttonSizeY);
-		  button.setLayoutParams(new TableRow.LayoutParams(
-		          TableRow.LayoutParams.WRAP_CONTENT,
-		          TableRow.LayoutParams.WRAP_CONTENT
-		      ));
-		  l1.addView(button);
-
-		  Button button2 = new Button(activity);
-		  button2.setBackgroundResource(R.drawable.button1);
-		  button2.setMinimumWidth(buttonSizeX);
-		  button2.setMinimumHeight(buttonSizeY);
-		  button2.setLayoutParams(new TableRow.LayoutParams(
-		          TableRow.LayoutParams.WRAP_CONTENT,
-		          TableRow.LayoutParams.WRAP_CONTENT
-		      ));
-		  l2.addView(button2);
-		  
-		  
-		  
-		  row.addView(l1);
-
-		  row.addView(l2);
-		  return row;
-	}
-	
-	private static View createSpacer(int spacerX, int spacerY, Context activity) 
-	{
-		ImageView spacer = new ImageView(activity);
-		spacer.setBackgroundColor(Color.argb(200, 226, 226, 226));
-		spacer.setMaxWidth(spacerX);
-		spacer.setMaxHeight(spacerY);
-		spacer.setMinimumWidth(spacerX);
-		spacer.setMinimumHeight(spacerY);
-		
-		return spacer;
-	}
-
 }
