@@ -5,11 +5,9 @@ import java.util.Random;
 import android.content.Context;
 import android.graphics.Point;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.AbsoluteLayout.LayoutParams;
 
 public class FunnyButton extends AbsoluteLayout {
 

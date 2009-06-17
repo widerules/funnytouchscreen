@@ -4,24 +4,16 @@ package ma.android.fst;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.Service;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 
 public class Main extends Activity implements OnClickListener{
@@ -36,7 +28,6 @@ public class Main extends Activity implements OnClickListener{
 	private int height;
 	private boolean musicEnabled;
 	private ArrayList<Button> buttons = new ArrayList<Button>();
-	
 	
 	/** Called when the activity is first created. */
     @Override
@@ -105,8 +96,7 @@ public class Main extends Activity implements OnClickListener{
         width = d.getWidth();
         height = d.getHeight();
         
-        TextView text = (TextView) findViewById(R.id.game1Level1);
-        int textHeight = 20;//text.getMeasuredHeight(); 
+        int textHeight = 20;
         int leftWidth = width - (ROW_PADDING * 2 + LAYOUR_PADDING * 2 * 3);
         int leftHeight = height - (ROW_PADDING * 2 * 5 + LAYOUR_PADDING * 2 * 5 + 5 + textHeight);
         
@@ -117,6 +107,10 @@ public class Main extends Activity implements OnClickListener{
         	button.setMinimumWidth(buttonSizeX);
 			button.setMinHeight(buttonSizeY);
 		}
+
+        Intent intent = new Intent(this, MusicPlayer.class);
+        startService(intent);
+
 	}
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -156,10 +150,14 @@ public class Main extends Activity implements OnClickListener{
 			case R.id.about:		break;
 			
 			case R.id.music:		if (musicEnabled){
+										Intent intent = new Intent(this, MusicPlayer.class);
+										stopService(intent);
 										pressed.setText(R.string.on);
 										musicEnabled = false;
 									}
 									else{
+										Intent intent = new Intent(this, MusicPlayer.class);
+										startService(intent);
 										pressed.setText(R.string.off);
 										musicEnabled = true;
 									}
@@ -168,11 +166,11 @@ public class Main extends Activity implements OnClickListener{
 	}
 	public void launchActivity(int game, int level)
 	{
-		Intent i = new Intent(this, FunnyScreenTouchActivity.class);
-        i.putExtra("squareNumberX",1);
-        i.putExtra("squareNumberY", 2);
-        i.putExtra("repeats",0);
-        i.putExtra("level",level);
-    	startActivity(i);
+		Intent intent = new Intent(this, FunnyScreenTouchActivity.class);
+		intent.putExtra("squareNumberX",1);
+		intent.putExtra("squareNumberY", 2);
+		intent.putExtra("repeats",0);
+		intent.putExtra("level",level);
+    	startActivity(intent);
 	}
 }
