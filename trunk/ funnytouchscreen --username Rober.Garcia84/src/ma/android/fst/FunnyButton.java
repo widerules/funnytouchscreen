@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 public class FunnyButton extends AbsoluteLayout {
 
@@ -49,6 +50,7 @@ public class FunnyButton extends AbsoluteLayout {
 		button = new Button(context);
 		button.setBackgroundResource(buttonBackground[random.nextInt(8)]);
 		button.setGravity(Gravity.CENTER);
+		button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
 		addView(button);
 
 		initDots();
