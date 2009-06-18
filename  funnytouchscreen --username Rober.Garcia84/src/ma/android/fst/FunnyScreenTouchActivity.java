@@ -1,14 +1,19 @@
 package ma.android.fst;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -18,6 +23,7 @@ import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -38,32 +44,35 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
     private int squareSizeY;
     private int level;
     private int selectedButtonNumber;
-    private int dotButtonX;
-    private int dotButtonY;
     private MediaPlayer mp;
-    
     private FunnyButton[][] screenElements;
 	private AbsoluteLayout absLayout;
+	private Resources resources;
 	private static Random random = new Random();
+	private AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingElement(1.0f,0.0f,BUTTON_ANIMATION_DURATION,0,0);
+	private int dissapearButtonX;
+	private int dissapearButtonY;
 	
 	static int [] background = new int[2];
 	
 	
 	static {
 		background[0] = R.drawable.copyleft;
-        background[1] = R.drawable.flower;
+        background[1] = R.drawable.flower; 
 	}
-
+	
 	/** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN); 
         
-        mp = MediaPlayer.create(this, R.raw.btn045);
+        resources = new Resources(this.getAssets(), new DisplayMetrics(), new
+				Configuration());
         
         Intent iParameters = getIntent();
         squareNumberX = iParameters.getIntExtra("squareNumberX", 0);
@@ -92,9 +101,28 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
         
         drawButtons();
         
+        dissapear.setAnimationListener(new AnimationListener(){
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				// TODO Auto-generated method stub
+					screenElements[dissapearButtonX][dissapearButtonY].setVisibility(View.INVISIBLE);
+					playSound(R.raw.btn045);
+					if (checkCompletedLevel(level))
+						runFinalAnimation();
+			}
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				// TODO Auto-generated method stub	
+			}
+			@Override
+			public void onAnimationStart(Animation animation) {
+				// TODO Auto-generated method stub	
+			}
+			});
+        
         this.setContentView(absLayout);
     }
-    AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingElement(1.0f,0.0f,BUTTON_ANIMATION_DURATION,0,0);
     
 	public void onClick(View v) 
 	{
@@ -108,26 +136,17 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 			case 1:	
 					if (parent.getDotNumer()==0)
 					{	
-						try{
-							mp.start();
-						}
-						catch(Exception e){
-							System.out.println(e.getMessage());
-						}
+						playSound(R.raw.btn045);
 					}
 					else 
 					{
 						checkPressedButton(parent, level);
 					}
 					break;
+					
 			case 2: if (!(Integer.parseInt((String) pressed.getText())==selectedButtonNumber))
 					{
-						try{
-							mp.start();
-						}
-						catch(Exception e){
-							System.out.println(e.getMessage());
-						}
+						playSound(R.raw.btn045);
 					}
 					else 
 					{
@@ -136,48 +155,17 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 					}
 					break;
 			
-			case 3: if (parent.getDotNumer()==selectedButtonNumber)
+			case 3: if (parent.getDotNumer()!=selectedButtonNumber)
+					{
+						playSound(R.raw.btn045);
+					}
+					else
 					{
 						selectedButtonNumber = selectedButtonNumber +1;
 						checkPressedButton(parent,level);
 					}
-					else{
-						try{
-							mp.start();
-						}
-						catch(Exception e){
-							System.out.println(e.getMessage());
-						}
-					}
 		}
 	}	
-	public void runFinalAnimation()
-	{
-		FinalAnimation fa = AnimationFactory.generateAnimation(height, width,this);
-		fa.getAnimation().setAnimationListener(new Animation.AnimationListener(){
-
-			public void onAnimationEnd(Animation animation) {
-					// TODO Auto-generated method stub
-				finish();
-				increaseLevel();
-			}
-
-			public void onAnimationRepeat(Animation animation) {
-			}
-
-			public void onAnimationStart(Animation animation) {
-			}
-	     });
-		
-		int animationImageSizeX = fa.getImage().getDrawable().getMinimumWidth();
-		int animationImageSizeY = fa.getImage().getDrawable().getMinimumHeight();
-		
-		absLayout.addView(fa.getImage(),new LayoutParams(animationImageSizeX,animationImageSizeY,fa.getStartPosition().x, fa.getStartPosition().y));
-		
-		fa.getImage().startAnimation(fa.getAnimation());
-		fa.getImage().setVisibility(ImageView.INVISIBLE);
-	}
-	
 	public void increaseLevel()
 	{
 		Intent iParameters = getIntent();
@@ -203,7 +191,6 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 	public void  checkPressedButton(FunnyButton pressed, int level)
 	{
 		LayoutParams pressedParams = (LayoutParams) pressed.getLayoutParams();
-		boolean finished = true;
 		boolean found = false;
 		for (int i=0;i<squareNumberX;i++)
 		{
@@ -213,7 +200,8 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 				LayoutParams buttonParams = (LayoutParams) funnyButton.getLayoutParams();
 				if (pressedParams.x == buttonParams.x && pressedParams.y == buttonParams.y){
 					screenElements[i][n].startAnimation(dissapear);
-					screenElements[i][n].setVisibility(View.INVISIBLE);
+					dissapearButtonX=i;
+					dissapearButtonY=n;
 					found = true;
 					break;
 				}
@@ -221,16 +209,33 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 	        if (found){
 				break;
 			}
-		}	
-		try{
-			mp.start();
-		}
-		catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		finished = checkCompletedLevel(level);
-		if (finished)
-			runFinalAnimation();
+		}		
+	}
+	public void runFinalAnimation()
+	{
+		FinalAnimation fa = AnimationFactory.generateAnimation(height, width,this);
+		fa.getAnimation().setAnimationListener(new Animation.AnimationListener(){
+
+			public void onAnimationEnd(Animation animation) {
+					// TODO Auto-generated method stub
+				finish();
+				increaseLevel();
+			}
+
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			public void onAnimationStart(Animation animation) {
+			}
+	     });
+		
+		int animationImageSizeX = fa.getImage().getDrawable().getMinimumWidth();
+		int animationImageSizeY = fa.getImage().getDrawable().getMinimumHeight();
+		
+		absLayout.addView(fa.getImage(),new LayoutParams(animationImageSizeX,animationImageSizeY,fa.getStartPosition().x, fa.getStartPosition().y));
+		
+		fa.getImage().startAnimation(fa.getAnimation());
+		fa.getImage().setVisibility(ImageView.INVISIBLE);
 	}
 	public boolean checkCompletedLevel(int level)
 	{	
@@ -274,6 +279,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 		int dotSquareX = random.nextInt(squareNumberX);
 		int dotSquareY = random.nextInt(squareNumberY);
 		boolean level1Dot = false;
+		
 		if (level == 2 || level == 3){
         	numbers = new ArrayList<Integer>();
 			for (int i = 0; i <squareNumberX * squareNumberY;i ++)
@@ -330,5 +336,41 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
         		absLayout.addView(screenElements[i][n], new LayoutParams(squareSizeX,squareSizeY,posX,posY));
 	        }
         }
+	}
+	public void playSound(int resource)
+	{
+		if (mp != null)
+		{
+			mp.reset();
+			try {
+				mp.setDataSource(resources.openRawResourceFd(resource).getFileDescriptor(),
+									resources.openRawResourceFd(resource).getStartOffset(),
+									resources.openRawResourceFd(resource).getLength());
+				mp.prepare();
+				mp.start();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+		}
+		else
+		{
+			mp = MediaPlayer.create(this, resource);
+			try{
+				mp.start();
+			}
+			catch(Exception e){
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 }

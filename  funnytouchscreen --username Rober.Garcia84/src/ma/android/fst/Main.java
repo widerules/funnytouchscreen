@@ -20,8 +20,6 @@ public class Main extends Activity implements OnClickListener{
 
 	public static final int ROW_PADDING = 5;
 	public static final int LAYOUR_PADDING = 5;
-	public static final int ROWS = 5;
-	public static final int COLUMNS = 3;
 	public static final int SEPARATOR_SIZE = 5;
 	
 	private int width;
@@ -41,7 +39,7 @@ public class Main extends Activity implements OnClickListener{
         
         setContentView(R.layout.main);
         
-        musicEnabled = true;
+        musicEnabled = false;
         
         Button airplaneMode = (Button) findViewById(R.id.airplaneMode); 
         buttons.add(airplaneMode);
@@ -88,7 +86,7 @@ public class Main extends Activity implements OnClickListener{
         	airplaneMode.setText(R.string.on);
         }
         
-        music.setText(R.string.off);
+        music.setText(R.string.on);
         
         WindowManager w = getWindowManager();
         Display d = w.getDefaultDisplay();
@@ -98,7 +96,7 @@ public class Main extends Activity implements OnClickListener{
         
         int textHeight = 20;
         int leftWidth = width - (ROW_PADDING * 2 + LAYOUR_PADDING * 2 * 3);
-        int leftHeight = height - (ROW_PADDING * 2 * 5 + LAYOUR_PADDING * 2 * 5 + 5 + textHeight);
+        int leftHeight = height - (ROW_PADDING * 2 * 5 + LAYOUR_PADDING * 2 * 5 + SEPARATOR_SIZE + textHeight);
         
         int buttonSizeX = leftWidth / 3;
         int buttonSizeY = leftHeight / 5;
@@ -106,20 +104,18 @@ public class Main extends Activity implements OnClickListener{
         for (Button button : buttons) {
         	button.setMinimumWidth(buttonSizeX);
 			button.setMinHeight(buttonSizeY);
-		}
-
-        Intent intent = new Intent(this, MusicPlayer.class);
-        startService(intent);
-
+        }
 	}
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		Button pressed = (Button)v;
-		boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
-	              Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+		
 		switch (pressed.getId())
 		{
-			case R.id.airplaneMode:	if (isEnabledAirplaneMode){
+			case R.id.airplaneMode:	boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
+									Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+			
+									if (isEnabledAirplaneMode){
 										Settings.System.putInt(getContentResolver(),
 									      		Settings.System.AIRPLANE_MODE_ON,0);
 										pressed.setText(R.string.on);
@@ -149,14 +145,13 @@ public class Main extends Activity implements OnClickListener{
 									break;
 			case R.id.about:		break;
 			
-			case R.id.music:		if (musicEnabled){
-										Intent intent = new Intent(this, MusicPlayer.class);
+			case R.id.music:		Intent intent = new Intent(this, MusicPlayer.class);
+									if (musicEnabled){
 										stopService(intent);
 										pressed.setText(R.string.on);
 										musicEnabled = false;
 									}
 									else{
-										Intent intent = new Intent(this, MusicPlayer.class);
 										startService(intent);
 										pressed.setText(R.string.off);
 										musicEnabled = true;
