@@ -1,6 +1,8 @@
 package ma.android.fst;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import android.app.Service;
@@ -15,10 +17,10 @@ import android.util.DisplayMetrics;
 public class MusicPlayer extends Service{
 
 	MediaPlayer mp;
-	int [] musics = new int [3];
+	ArrayList<Integer> musics = new ArrayList<Integer>();
 	Random random = new Random();
 	Resources resources;
-	
+	int songNumber;
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
@@ -28,11 +30,13 @@ public class MusicPlayer extends Service{
 	public void onCreate() 
 	{
 		super.onCreate();
-		musics[0]= R.raw.btn045;
-		musics[1]= R.raw.btn045;
-		musics[2]= R.raw.btn045;
+		musics.add(R.raw.btn045);
+		musics.add(R.raw.btn045);
+		musics.add(R.raw.btn045);
 		resources = new Resources(this.getAssets(), new DisplayMetrics(), new
-				Configuration());		
+				Configuration());
+		Collections.shuffle(musics);
+		songNumber = 0;
 	}
 	
 	@Override
@@ -40,17 +44,21 @@ public class MusicPlayer extends Service{
 	{
 		try
 		{
-			mp = MediaPlayer.create(this, musics[random.nextInt(3)]);
+			mp = MediaPlayer.create(this, musics.get(songNumber));
 			mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
 				@Override
-				public void onCompletion(MediaPlayer mp) {
+				public void onCompletion(MediaPlayer mp) 
+				{
 					// TODO Auto-generated method stub
-						int randomMusic = random.nextInt(3);
+						songNumber++;
+						if (songNumber == musics.size()){
+							songNumber = 0;
+						}
 						mp.reset();
 						try {
-							mp.setDataSource(resources.openRawResourceFd(musics[randomMusic]).getFileDescriptor(),
-												resources.openRawResourceFd(musics[randomMusic]).getStartOffset(),
-												resources.openRawResourceFd(musics[randomMusic]).getLength());
+							mp.setDataSource(resources.openRawResourceFd(musics.get(songNumber)).getFileDescriptor(),
+												resources.openRawResourceFd(musics.get(songNumber)).getStartOffset(),
+												resources.openRawResourceFd(musics.get(songNumber)).getLength());
 							mp.prepare();
 							mp.start();
 						} catch (IllegalArgumentException e) {
@@ -66,6 +74,8 @@ public class MusicPlayer extends Service{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}	
+						
+						
 				}
 			});
 			new Thread(r).start();  

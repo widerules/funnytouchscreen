@@ -133,10 +133,6 @@
 			</Button>	
 		</LinearLayout>	
 	</TableRow>
-	<ImageView
-		android:minHeight="5px"
-		android:background="#FA0000">
-	</ImageView>
 	<TableRow 
 		android:padding="5px"
 		android:layout_width="wrap_content"
