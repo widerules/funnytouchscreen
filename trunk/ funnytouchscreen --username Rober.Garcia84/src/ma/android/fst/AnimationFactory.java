@@ -51,7 +51,7 @@ public class AnimationFactory {
 		            Animation.RELATIVE_TO_SELF, 0.5f,ANIMATION_DURATION/4,3,Animation.REVERSE));
 					break;
 			
-			case 1: set.addAnimation(AnimationFactory.fadingElement(1.0f, 0.0f, ANIMATION_DURATION/4, 3, Animation.REVERSE));
+			case 1: set.addAnimation(AnimationFactory.fadingOutElement(1.0f, 0.0f, ANIMATION_DURATION/4, 3, Animation.REVERSE));
 					break;	
 		}
 		
@@ -101,7 +101,7 @@ public class AnimationFactory {
 		
 		return growingElement;
 	}
-	public static Animation fadingElement(float fromAlpha, float toAlpha, long duration, int repeatCount, int repeatMode)
+	public static Animation fadingOutElement(float fromAlpha, float toAlpha, long duration, int repeatCount, int repeatMode)
 	{
 		AlphaAnimation fadding = new AlphaAnimation(fromAlpha,toAlpha);
 		fadding.setDuration(duration);
@@ -111,6 +111,7 @@ public class AnimationFactory {
 			fadding.setRepeatMode(repeatMode);
 		return fadding;
 	}
+	
 	public static Animation translation(float fromX, float toX, float fromY, float toY, long duration, int repeatCount, int repeatMode)
 	{
 		TranslateAnimation translation = new TranslateAnimation(fromX,toX,fromY,toY);
@@ -164,5 +165,15 @@ public class AnimationFactory {
 		starAlongSides.addAnimation(upLeft);
 		
 		return starAlongSides;
+	}
+	public static Animation blinkingElement(float fromAlpha, float toAlpha, long duration, int repeatCount, int repeatMode)
+	{
+		AlphaAnimation fadding = new AlphaAnimation(fromAlpha,toAlpha);
+		fadding.setDuration(duration);
+		if (repeatCount != 0)
+			fadding.setRepeatCount(repeatCount);
+		if (repeatMode != 0 )
+			fadding.setRepeatMode(repeatMode);
+		return fadding;
 	}
 }

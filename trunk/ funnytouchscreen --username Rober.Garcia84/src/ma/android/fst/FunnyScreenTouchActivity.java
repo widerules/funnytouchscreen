@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Point;
 import android.media.MediaPlayer;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -43,15 +44,17 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
     private int squareSizeX;
     private int squareSizeY;
     private int level;
+    private int game;
     private int selectedButtonNumber;
     private MediaPlayer mp;
     private FunnyButton[][] screenElements;
 	private AbsoluteLayout absLayout;
 	private Resources resources;
 	private static Random random = new Random();
-	private AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingElement(1.0f,0.0f,BUTTON_ANIMATION_DURATION,0,0);
+	private AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingOutElement(1.0f,0.0f,BUTTON_ANIMATION_DURATION,0,0);
 	private int dissapearButtonX;
 	private int dissapearButtonY;
+	private Button blinkingButton;
 	
 	static int [] background = new int[2];
 	
@@ -78,6 +81,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
         squareNumberX = iParameters.getIntExtra("squareNumberX", 0);
         squareNumberY = iParameters.getIntExtra("squareNumberY", 0);
         level = iParameters.getIntExtra("level", 0);
+        game = iParameters.getIntExtra("game", 0);
         
         random = new Random();
         selectedButtonNumber = 1;
@@ -128,42 +132,107 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 	{
 		Button pressed = (Button)v;
 		FunnyButton parent = (FunnyButton) pressed.getParent();
-		switch (level)
+		if (game ==1)
 		{
-			case 0: checkPressedButton(parent, level);
-					break;
-			
-			case 1:	
-					if (parent.getDotNumer()==0)
-					{	
-						playSound(R.raw.btn045);
-					}
-					else 
-					{
-						checkPressedButton(parent, level);
-					}
-					break;
-					
-			case 2: if (!(Integer.parseInt((String) pressed.getText())==selectedButtonNumber))
-					{
-						playSound(R.raw.btn045);
-					}
-					else 
-					{
-						selectedButtonNumber = selectedButtonNumber +1;
-						checkPressedButton(parent,level);
-					}
-					break;
-			
-			case 3: if (parent.getDotNumer()!=selectedButtonNumber)
-					{
-						playSound(R.raw.btn045);
-					}
-					else
-					{
-						selectedButtonNumber = selectedButtonNumber +1;
-						checkPressedButton(parent,level);
-					}
+			switch (level)
+			{
+				case 0: checkPressedButton(parent, level);
+						break;
+				
+				case 1:	
+						if (parent.getDotNumer()==1)
+						{	
+							checkPressedButton(parent, level);
+						}
+						else 
+						{
+							playSound(R.raw.btn045);
+						}
+						break;
+						
+				case 2: if ((Integer.parseInt((String) pressed.getText())==selectedButtonNumber))
+						{
+							
+							selectedButtonNumber = selectedButtonNumber +1;
+							checkPressedButton(parent,level);
+						}
+						else 
+						{
+							playSound(R.raw.btn045);
+						}
+						break;
+				
+				case 3: if (parent.getDotNumer()==selectedButtonNumber)
+						{
+							selectedButtonNumber = selectedButtonNumber +1;
+							checkPressedButton(parent,level);
+						}
+						else
+						{
+							
+							playSound(R.raw.btn045);
+						}
+			}
+		}
+		else if (game == 2)
+		{
+			if (blinkingButton == null && pressed != blinkingButton)
+			{
+				blinkingButton = pressed;
+				switch (level)
+				{
+					case 2:	pressed.startAnimation(AnimationFactory.blinkingElement(1.0f, 0.0f, 300, Animation.INFINITE, Animation.REVERSE));				
+					case 3: pressed.startAnimation(AnimationFactory.blinkingElement(1.0f, 0.0f, 300, Animation.INFINITE, Animation.REVERSE));
+							ImageView[] dots = parent.getDots();
+							for (ImageView dot : dots) {
+								if (dot != null){
+									dot.startAnimation(AnimationFactory.blinkingElement(1.0f, 0.0f, 300, Animation.INFINITE, Animation.REVERSE));
+								}
+								else{
+									break;
+								}
+							}
+				}
+			}
+			else
+			{
+				switch (level)
+				{
+					case 2:	if (pressed.getText().equals(blinkingButton.getText()))
+							{
+								parent.setVisibility(View.INVISIBLE);
+								blinkingButton.setAnimation(null);
+								FunnyButton blinkingParent = (FunnyButton) blinkingButton.getParent();
+								blinkingParent.setVisibility(View.INVISIBLE);
+								blinkingButton = null;
+							}
+							else
+							{
+								playSound(R.raw.btn045);
+							}
+					case 3: FunnyButton blinkingParent = (FunnyButton) blinkingButton.getParent();
+							if (blinkingParent.getDotNumer()== parent.getDotNumer())
+							{
+								parent.setVisibility(View.INVISIBLE);
+								blinkingButton.setAnimation(null);
+								ImageView[] dots = parent.getDots();
+								for (ImageView dot : dots) {
+									if (dot != null){
+										dot.setAnimation(null);
+									}
+									else{
+										break;
+									}
+								}
+								blinkingParent.setVisibility(View.INVISIBLE);
+								blinkingButton = null;
+							}
+							else
+							{
+								playSound(R.raw.btn045);
+							}
+				}
+			}
 		}
 	}	
 	public void increaseLevel()
@@ -274,6 +343,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 	public void drawButtons()
 	{
 		ArrayList<Integer> numbers = null;
+		ArrayList<Boolean> drawed = null;
 		int selected;
 		int dotNumber;
 		int dotSquareX = random.nextInt(squareNumberX);
@@ -282,9 +352,12 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 		
 		if (level == 2 || level == 3){
         	numbers = new ArrayList<Integer>();
+        	drawed = new ArrayList<Boolean>();
 			for (int i = 0; i <squareNumberX * squareNumberY;i ++)
+			//for (int i = 0; i <(squareNumberX * squareNumberY)/2;i ++)
 			{
 				numbers.add(i+1);
+				drawed.add(false);
 			}	
         }
 		
@@ -318,19 +391,35 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
         					}
         					break;
     		
-        			case 2:	selected = random.nextInt(numbers.size());
+        			case 2:	selected = random.nextInt(numbers.size()); 
 	        				dotNumber = 0;
         					screenElements[i][n] = new FunnyButton(this,dotNumber);
 	        				screenElements[i][n].getButton().setText(numbers.get(selected).toString());
 	        				screenElements[i][n].getButton().setTextSize(50);
-	        				numbers.remove(selected);
+	        				//if (!drawed.get(selected))
+	        				//{
+	        				//	drawed.set(selected, true);
+	        				//}
+	        				//else
+	        				//{
+	        					numbers.remove(selected);
+	        				//	drawed.remove(selected);
+	        				//}
 	        				break;
 	        	
         			case 3:	selected = random.nextInt(numbers.size());
         					dotNumber = numbers.get(selected);
         					screenElements[i][n] = new FunnyButton(this,dotNumber);
-		        			numbers.remove(selected);
-		        			break;
+        					//if (!drawed.get(selected))
+	        				//{
+	        				//	drawed.set(selected, true);
+	        				//}
+	        				//else
+	        				//{
+	        					numbers.remove(selected);
+	        			//		drawed.remove(selected);
+	        				//}
+	        				break;
 	        	}
         		screenElements[i][n].getButton().setOnClickListener(this);
         		absLayout.addView(screenElements[i][n], new LayoutParams(squareSizeX,squareSizeY,posX,posY));

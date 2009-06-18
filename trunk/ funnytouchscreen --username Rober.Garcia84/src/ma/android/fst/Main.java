@@ -96,7 +96,7 @@ public class Main extends Activity implements OnClickListener{
         
         int textHeight = 20;
         int leftWidth = width - (ROW_PADDING * 2 + LAYOUR_PADDING * 2 * 3);
-        int leftHeight = height - (ROW_PADDING * 2 * 5 + LAYOUR_PADDING * 2 * 5 + SEPARATOR_SIZE + textHeight);
+        int leftHeight = height - (ROW_PADDING * 2 * 5 + LAYOUR_PADDING * 2 * 5 + textHeight);
         
         int buttonSizeX = leftWidth / 3;
         int buttonSizeY = leftHeight / 5;
@@ -135,13 +135,13 @@ public class Main extends Activity implements OnClickListener{
 									break;
 			case R.id.game1Level4: 	launchActivity(1,3);
 									break;
-			case R.id.game2Level1: 	launchActivity(1,0);
+			case R.id.game2Level1: 	launchActivity(2,0);
 									break;
-			case R.id.game2Level2: 	launchActivity(1,1);
+			case R.id.game2Level2: 	launchActivity(2,1);
 									break;
-			case R.id.game2Level3: 	launchActivity(1,2);
+			case R.id.game2Level3: 	launchActivity(2,2);
 									break;
-			case R.id.game2Level4: 	launchActivity(1,3);
+			case R.id.game2Level4: 	launchActivity(2,3);
 									break;
 			case R.id.about:		break;
 			
@@ -162,10 +162,19 @@ public class Main extends Activity implements OnClickListener{
 	public void launchActivity(int game, int level)
 	{
 		Intent intent = new Intent(this, FunnyScreenTouchActivity.class);
-		intent.putExtra("squareNumberX",1);
-		intent.putExtra("squareNumberY", 2);
-		intent.putExtra("repeats",0);
-		intent.putExtra("level",level);
-    	startActivity(intent);
+		if (game == 1)
+		{	intent.putExtra("squareNumberX",1);
+			intent.putExtra("squareNumberY", 2);
+			intent.putExtra("repeats",0);
+		}
+		else
+		{
+			intent.putExtra("squareNumberX",3);
+			intent.putExtra("squareNumberY", 4);
+			intent.putExtra("repeats",0);
+		}
+			intent.putExtra("level",level);
+			intent.putExtra("game", game);
+			startActivity(intent);
 	}
 }
