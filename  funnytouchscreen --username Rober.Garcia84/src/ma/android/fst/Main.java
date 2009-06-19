@@ -131,17 +131,17 @@ public class Main extends Activity implements OnClickListener{
 									break;
 			case R.id.game1Level2: 	launchActivity(1,1);
 									break;
-			case R.id.game1Level3: 	launchActivity(1,2);
+			case R.id.game1Level3: 	launchActivity(1,3);
 									break;
-			case R.id.game1Level4: 	launchActivity(1,3);
+			case R.id.game1Level4: 	launchActivity(1,2);
 									break;
-			case R.id.game2Level1: 	launchActivity(2,0);
+			case R.id.game2Level1: 	launchActivity(2,1);
 									break;
-			case R.id.game2Level2: 	launchActivity(2,1);
+			case R.id.game2Level2: 	launchActivity(2,0);
 									break;
-			case R.id.game2Level3: 	launchActivity(2,2);
+			case R.id.game2Level3: 	launchActivity(2,3);
 									break;
-			case R.id.game2Level4: 	launchActivity(2,3);
+			case R.id.game2Level4: 	launchActivity(2,2);
 									break;
 			case R.id.about:		break;
 			

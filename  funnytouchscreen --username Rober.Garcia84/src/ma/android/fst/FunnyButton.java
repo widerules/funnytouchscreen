@@ -14,8 +14,8 @@ public class FunnyButton extends AbsoluteLayout {
 
 	private ImageView[]dots;
 	private Button button;
-
-	int dotNumber;
+	private int serial;
+	private int dotNumber;
 
 	static int [] buttonBackground = new int [8];
 
@@ -26,8 +26,11 @@ public class FunnyButton extends AbsoluteLayout {
 		buttonBackground[3] = R.drawable.button2;
 		buttonBackground[4] = R.drawable.button1;
 		buttonBackground[5] = R.drawable.button2;
-		buttonBackground[6] = R.drawable.button1;
-		buttonBackground[7] = R.drawable.button2;
+		/*buttonBackground[2] = R.drawable.button3;
+		buttonBackground[3] = R.drawable.button4;
+		buttonBackground[4] = R.drawable.button5;
+		buttonBackground[5] = R.drawable.button6;*/
+
 	}
 
 	private static final Point[][] DOTS = new Point[][] {
@@ -42,21 +45,20 @@ public class FunnyButton extends AbsoluteLayout {
 		{new Point(35,35),new Point(35,0), new Point(35,-35), new Point(0,35), new Point(0,0), new Point(0,-35), new Point(-35,35), new Point(-35,0), new Point(-35,-35) },
 	};
 
-	public FunnyButton(Context context, int dotNumber) {
+	public FunnyButton(Context context, int dotNumber, boolean image) {
 		super(context);
 
 		this.dotNumber = dotNumber;
-		Random random = new Random();
+		this.serial = 0;
 		button = new Button(context);
-		button.setBackgroundResource(buttonBackground[random.nextInt(8)]);
 		button.setGravity(Gravity.CENTER);
 		button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
 		addView(button);
-
-		initDots();
+		
+		initDots(image);
 	}
 
-	private void initDots() {
+	private void initDots(boolean image) {
 		if (dots != null) {
 			for (ImageView dot : dots) {
 				if (dot != null) removeView(dot);
@@ -69,7 +71,10 @@ public class FunnyButton extends AbsoluteLayout {
 			{
 				if (DOTS[dotNumber-1][x]!= null){
 					dots[x]= new ImageView(getContext());
-					dots[x].setImageResource(R.drawable.dot3);
+					if (image)
+						dots[x].setImageResource(R.drawable.cat);
+					else
+						dots[x].setImageResource(R.drawable.dot);
 					addView(dots[x]);
 				}
 				else{
@@ -96,7 +101,7 @@ public class FunnyButton extends AbsoluteLayout {
 					int startPositionY = squareCenter.y + dotPosition.y - dotSizeY/2;
 					dots[i].layout(startPositionX, startPositionY, startPositionX + dotSizeX, startPositionY + dotSizeY);
 				}
-				else{
+				else{ 
 					break;
 				}
 			}
@@ -114,10 +119,22 @@ public class FunnyButton extends AbsoluteLayout {
 	{
 		return dotNumber;
 	}
-	public void placeDot()
+	public void placeDot(boolean image)
 	{
 		dotNumber = 1;
-		initDots();
+		initDots(image);
+	}
+	public void setButtonBackground(int background)
+	{
+		button.setBackgroundResource(buttonBackground[background]);
+	}
+	public void setSerial(int s)
+	{
+		serial = s;
+	}
+
+	public int getSerial() {
+		return serial;
 	}
 
 }
