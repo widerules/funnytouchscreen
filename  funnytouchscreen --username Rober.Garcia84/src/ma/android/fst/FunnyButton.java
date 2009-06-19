@@ -47,7 +47,6 @@ public class FunnyButton extends AbsoluteLayout {
 
 	public FunnyButton(Context context, int dotNumber, boolean image) {
 		super(context);
-
 		this.dotNumber = dotNumber;
 		this.serial = 0;
 		button = new Button(context);

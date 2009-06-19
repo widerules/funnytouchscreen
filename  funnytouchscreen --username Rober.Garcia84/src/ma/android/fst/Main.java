@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.PopupWindow;
 
 
 public class Main extends Activity implements OnClickListener{
@@ -143,7 +145,14 @@ public class Main extends Activity implements OnClickListener{
 									break;
 			case R.id.game2Level4: 	launchActivity(2,2);
 									break;
-			case R.id.about:		break;
+			case R.id.about:		PopupWindow p= new PopupWindow(this);
+									View popUp= findViewById(R.layout.about);
+									p.setContentView(popUp);
+									p.setWidth(width);
+									p.setHeight(height);
+									p.showAtLocation(findViewById(R.layout.main), Gravity.FILL, 0, 0);
+									
+									break;
 			
 			case R.id.music:		Intent intent = new Intent(this, MusicPlayer.class);
 									if (musicEnabled){
