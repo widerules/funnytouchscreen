@@ -1,0 +1,6 @@
+- In the third level of the second game, while the user makes the couples dissapear 
+the dots of the remaining buttons fade out until they are invisible.
+
+- about window
+
+
