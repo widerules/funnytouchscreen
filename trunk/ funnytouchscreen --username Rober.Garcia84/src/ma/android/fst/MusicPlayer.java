@@ -30,9 +30,9 @@ public class MusicPlayer extends Service{
 	public void onCreate() 
 	{
 		super.onCreate();
-		musics.add(R.raw.btn045);
-		musics.add(R.raw.btn045);
-		musics.add(R.raw.btn045);
+		musics.add(R.raw.music1);
+		musics.add(R.raw.music2);
+		musics.add(R.raw.music3);
 		resources = new Resources(this.getAssets(), new DisplayMetrics(), new
 				Configuration());
 		Collections.shuffle(musics);
