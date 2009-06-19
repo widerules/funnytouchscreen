@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -145,14 +146,7 @@ public class Main extends Activity implements OnClickListener{
 									break;
 			case R.id.game2Level4: 	launchActivity(2,2);
 									break;
-			case R.id.about:		PopupWindow p= new PopupWindow(this);
-									View popUp= findViewById(R.layout.about);
-									p.setContentView(popUp);
-									p.setWidth(width);
-									p.setHeight(height);
-									p.showAtLocation(findViewById(R.layout.main), Gravity.FILL, 0, 0);
-									
-									break;
+			case R.id.about:		break;
 			
 			case R.id.music:		Intent intent = new Intent(this, MusicPlayer.class);
 									if (musicEnabled){
