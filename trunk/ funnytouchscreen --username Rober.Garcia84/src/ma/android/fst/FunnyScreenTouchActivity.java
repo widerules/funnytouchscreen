@@ -115,7 +115,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 			public void onAnimationEnd(Animation animation) {
 				// TODO Auto-generated method stub
 					dissapearButton.setVisibility(View.INVISIBLE);
-					playSound(R.raw.btn045);
+					playSound(R.raw.sound_disappear);
 					for (int i=0;i<squareNumberX;i++)
 			        {
 			        	for (int n=0;n<squareNumberY;n++)
@@ -158,7 +158,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 						}
 						else 
 						{
-							playSound(R.raw.btn045);
+							playSound(R.raw.sound_disappear);
 						}
 						break;
 						
@@ -171,7 +171,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 						}
 						else 
 						{
-							playSound(R.raw.btn045);
+							playSound(R.raw.sound_disappear);
 						}
 						break;
 				
@@ -183,7 +183,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 						}
 						else
 						{
-							playSound(R.raw.btn045);
+							playSound(R.raw.sound_disappear);
 						}
 			}
 		}
@@ -202,7 +202,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 							}
 							else
 							{
-								playSound(R.raw.btn045);
+								playSound(R.raw.sound_disappear);
 							}
 							break;
 							
@@ -212,7 +212,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 							}
 							else
 							{
-								playSound(R.raw.btn045);
+								playSound(R.raw.sound_disappear);
 							}
 							break;
 							
@@ -222,7 +222,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 							}
 							else
 							{
-								playSound(R.raw.btn045);
+								playSound(R.raw.sound_disappear);
 							}
 							break;
 				}
@@ -238,7 +238,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 							}
 							else
 							{
-								playSound(R.raw.btn045);
+								playSound(R.raw.sound_disappear);
 							}
 							break;
 							
@@ -248,7 +248,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 							}
 							else
 							{
-								playSound(R.raw.btn045);
+								playSound(R.raw.sound_disappear);
 							}
 							break;
 						
@@ -258,7 +258,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 							}
 							else
 							{
-								playSound(R.raw.btn045);
+								playSound(R.raw.sound_disappear);
 							}
 							break;
 							
@@ -268,7 +268,7 @@ public class FunnyScreenTouchActivity extends Activity implements OnClickListene
 							}
 							else
 							{
-								playSound(R.raw.btn045);
+								playSound(R.raw.sound_disappear);
 							}
 							break;
 				}
