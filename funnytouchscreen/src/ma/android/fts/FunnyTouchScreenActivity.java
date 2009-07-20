@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
@@ -50,23 +49,44 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	private FunnyButton dissapearButton;
 	private Button blinkingButton;
 	
-	static int [] background = new int[2];
+	static int [] background = new int[27];
 	
 	
 	static {
-		background[0] = R.drawable.copyleft;
-        background[1] = R.drawable.flower; 
+		background[0] = R.drawable.background1;
+		background[1] = R.drawable.background2;
+		background[2] = R.drawable.background3;
+		background[3] = R.drawable.background4;
+		background[4] = R.drawable.background5;
+		background[5] = R.drawable.background6;
+		background[6] = R.drawable.background7;
+		background[7] = R.drawable.background8;
+		background[8] = R.drawable.background9;
+		background[9] = R.drawable.background10;
+		background[10] = R.drawable.background11;
+		background[11] = R.drawable.background12;
+		background[12] = R.drawable.background13;
+		background[13] = R.drawable.background14;
+		background[14] = R.drawable.background15;
+		background[15] = R.drawable.background16;
+		background[16] = R.drawable.background17;
+		background[17] = R.drawable.background18;
+		background[18] = R.drawable.background19;
+		background[19] = R.drawable.background20;
+		background[20] = R.drawable.background21;
+		background[21] = R.drawable.background22;
+		background[22] = R.drawable.background23;
+		background[23] = R.drawable.background24;
+		background[24] = R.drawable.background25;
+		background[25] = R.drawable.background26;
+		background[26] = R.drawable.background27;
 	}
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
-        super.onCreate(savedInstanceState);
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN); 
+        super.onCreate(savedInstanceState);  
         
         resources = new Resources(this.getAssets(), new DisplayMetrics(), new
 				Configuration());
@@ -81,7 +101,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         selectedButtonNumber = 1;
         
         absLayout = new AbsoluteLayout(this);
-        absLayout.setBackgroundResource(background[random.nextInt(2)]); 
+        absLayout.setBackgroundResource(background[random.nextInt(27)]); 
         
         WindowManager w = getWindowManager();
         Display d = w.getDefaultDisplay();
@@ -448,7 +468,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         					if (game == 1)
         					{
         						screenElements[i][n] = new FunnyButton(this,dotNumber,false);
-        						screenElements[i][n].setButtonBackground(random.nextInt(6));
+        						screenElements[i][n].setButtonBackground(random.nextInt(5));
         					}
         					else if (game == 2)
 	        				{
@@ -478,28 +498,28 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		        						screenElements[i][n] = new FunnyButton(this,dotNumber,true);
 		        					else
 		        						screenElements[i][n] = new FunnyButton(this,dotNumber,false);
-			        				screenElements[i][n].setButtonBackground(random.nextInt(6));
+			        				screenElements[i][n].setButtonBackground(random.nextInt(5));
 			        				level1Dot=true;
 			        			}
 			        			else if (i == image2SquareX && n == image2SquareY && game == 2)
 			        			{
 									dotNumber = 1;
 									screenElements[i][n] = new FunnyButton(this,dotNumber,true);
-									screenElements[i][n].setButtonBackground(random.nextInt(6));
+									screenElements[i][n].setButtonBackground(random.nextInt(5));
 									level2Dot=true;
 								} 
 			        			else
 			        			{
 			        				dotNumber = 0;
 			        				screenElements[i][n] = new FunnyButton(this,dotNumber,false);
-			            			screenElements[i][n].setButtonBackground(random.nextInt(6));
+			            			screenElements[i][n].setButtonBackground(random.nextInt(5));
 			        			}
 		        			}			
 			        		else
 			        		{
 			        			dotNumber = 0;
 			        			screenElements[i][n] = new FunnyButton(this,dotNumber,false);
-			        			screenElements[i][n].setButtonBackground(random.nextInt(6));
+			        			screenElements[i][n].setButtonBackground(random.nextInt(5));
 			        		}
 		        			
         					break;
@@ -507,7 +527,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         			case 2:	selected = random.nextInt(numbers.size()); 
 	        				dotNumber = 0;
         					screenElements[i][n] = new FunnyButton(this,dotNumber,false);
-        					screenElements[i][n].setButtonBackground(random.nextInt(6));
+        					screenElements[i][n].setButtonBackground(random.nextInt(5));
 	        				screenElements[i][n].getButton().setText(numbers.get(selected).toString());
 	        				screenElements[i][n].getButton().setTextSize(50);
 	        				if (game == 2)
@@ -529,7 +549,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         			case 3:	selected = random.nextInt(numbers.size());
         					dotNumber = numbers.get(selected);
         					screenElements[i][n] = new FunnyButton(this,dotNumber,false);
-        					screenElements[i][n].setButtonBackground(random.nextInt(6));
+        					screenElements[i][n].setButtonBackground(random.nextInt(5));
         					if (game == 2)
 	        				{
 		        				if (!drawed.get(selected))

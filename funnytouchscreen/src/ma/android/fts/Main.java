@@ -1,8 +1,6 @@
 package ma.android.fts;
 
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,98 +10,101 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.widget.AbsoluteLayout;
 import android.widget.Button;
+import android.widget.AbsoluteLayout.LayoutParams;
 
 
 public class Main extends Activity implements OnClickListener{
 
-	public static final int ROW_PADDING = 5;
-	public static final int LAYOUR_PADDING = 5;
-	public static final int SEPARATOR_SIZE = 5;
+	public static final int PADDING = 3;
+	public static final int PADDING_RIGHT = 20;
+	public static final int PADDING_LEFT = 112;
+	public static final int PADDING_TOP = 120;
+	public static final int PADDING_BOTTOM = 86;
+	
+	public static final int SQUARENUMBERX = 2;
+	public static final int SQUARENUMBERY = 4;
+	
+	public static final int BOTTOMBUTTONS_PADDING_TOP = 416;
+	public static final int BOTTOMBUTTONS_PADDING_SIDE = 20;
+	public static final int BOTTOMBUTTONS_PADDING_BOTTOM = 12;
+	public static final int BOTTOMBUTTONS = 3;
 	
 	private int width;
 	private int height;
 	private boolean musicEnabled;
-	private ArrayList<Button> buttons = new ArrayList<Button>();
+	private AbsoluteLayout absLayout;
+	private FunnyButton[][] menuElements;
+	private FunnyButton[] settingElements;
+	private int squareSizeXMenu;
+	private int squareSizeYMenu;
+	
+	private int squareSizeXSettings;
+	private int squareSizeYSettings;
+	
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN); 
-        
-        setContentView(R.layout.main);
-        
         musicEnabled = false;
         
-        Button airplaneMode = (Button) findViewById(R.id.airplaneMode); 
-        buttons.add(airplaneMode);
-        Button g1L1 = (Button)findViewById(R.id.game1Level1); 
-        buttons.add(g1L1);
-        Button g1L2 = (Button)findViewById(R.id.game1Level2);
-        buttons.add(g1L2);
-        Button g1L3 = (Button)findViewById(R.id.game1Level3);
-        buttons.add(g1L3);
-        Button g1L4 = (Button)findViewById(R.id.game1Level4);
-        buttons.add(g1L4);
-        Button g2L1 = (Button)findViewById(R.id.game2Level1);
-        buttons.add(g2L1);
-        Button g2L2 = (Button)findViewById(R.id.game2Level2);
-        buttons.add(g2L2);
-        Button g2L3 = (Button)findViewById(R.id.game2Level3);
-        buttons.add(g2L3);
-        Button g2L4 = (Button)findViewById(R.id.game2Level4);
-        buttons.add(g2L4);
-        Button about = (Button)findViewById(R.id.about);
-        buttons.add(about);
-        Button music = (Button)findViewById(R.id.music);
-        buttons.add(music);
-        
-        airplaneMode.setOnClickListener(this);
-        g1L1.setOnClickListener(this);
-        g1L2.setOnClickListener(this);
-        g1L3.setOnClickListener(this);
-        g1L4.setOnClickListener(this);
-        g2L1.setOnClickListener(this);
-        g2L2.setOnClickListener(this);
-        g2L3.setOnClickListener(this);
-        g2L4.setOnClickListener(this);
-        about.setOnClickListener(this);
-        music.setOnClickListener(this);
-       
-        boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
-              Settings.System.AIRPLANE_MODE_ON, 0) == 1;
-        
-        if (isEnabledAirplaneMode){
-        	airplaneMode.setText(R.string.off);
-        }
-        else{
-        	airplaneMode.setText(R.string.on);
-        }
-        
-        music.setText(R.string.on);
-        
+        absLayout = new AbsoluteLayout(this);
+        absLayout.setBackgroundResource(R.drawable.main_background); 
+      
         WindowManager w = getWindowManager();
         Display d = w.getDefaultDisplay();
 
         width = d.getWidth();
         height = d.getHeight();
         
-        int textHeight = 20;
-        int leftWidth = width - (ROW_PADDING * 2 + LAYOUR_PADDING * 2 * 3);
-        int leftHeight = height - (ROW_PADDING * 2 * 5 + LAYOUR_PADDING * 2 * 5 + textHeight);
+        menuElements = new FunnyButton[SQUARENUMBERX][SQUARENUMBERY];
+        settingElements = new FunnyButton[BOTTOMBUTTONS];
         
-        int buttonSizeX = leftWidth / 3;
-        int buttonSizeY = leftHeight / 5;
+        int leftWidth = width - PADDING_LEFT - PADDING_RIGHT - PADDING;
+        squareSizeXMenu = leftWidth / SQUARENUMBERX;
         
-        for (Button button : buttons) {
-        	button.setMinimumWidth(buttonSizeX);
-			button.setMinHeight(buttonSizeY);
+        int leftHeight = height  - PADDING_TOP - PADDING_BOTTOM - PADDING;
+        squareSizeYMenu = leftHeight / SQUARENUMBERY;
+        
+        int bottomLeftWidth = width - BOTTOMBUTTONS_PADDING_SIDE * 2 - PADDING *2;
+        squareSizeXSettings = bottomLeftWidth / 3;
+        
+        int bottomLeftHeight = height - BOTTOMBUTTONS_PADDING_TOP - BOTTOMBUTTONS_PADDING_BOTTOM;
+        squareSizeYSettings = bottomLeftHeight;
+
+        drawButtons();
+        
+        menuElements[0][0].getButton().setId(R.string.game1Level1);
+        menuElements[0][1].getButton().setId(R.string.game1Level2);
+        menuElements[0][2].getButton().setId(R.string.game1Level3);
+        menuElements[0][3].getButton().setId(R.string.game1Level4);
+        menuElements[1][0].getButton().setId(R.string.game2Level1);
+        menuElements[1][1].getButton().setId(R.string.game2Level2);
+        menuElements[1][2].getButton().setId(R.string.game2Level3);
+        menuElements[1][3].getButton().setId(R.string.game2Level4);
+        
+        settingElements[0].getButton().setId(R.string.aboutButton);
+        settingElements[1].getButton().setId(R.string.airplaneMode);
+        settingElements[2].getButton().setId(R.string.music);
+        
+        boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
+              Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+        
+        if (isEnabledAirplaneMode){
+        	settingElements[1].getButton().setBackgroundResource(R.drawable.airplane_on);	
         }
+        else{
+        	settingElements[1].getButton().setBackgroundResource(R.drawable.airplane_off);
+        }
+        
+        settingElements[0].getButton().setBackgroundResource(R.drawable.about);
+        settingElements[2].getButton().setBackgroundResource(R.drawable.music_off);
+        
+        
+        this.setContentView(absLayout);
 	}
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -111,51 +112,52 @@ public class Main extends Activity implements OnClickListener{
 		
 		switch (pressed.getId())
 		{
-			case R.id.airplaneMode:	boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
-									Settings.System.AIRPLANE_MODE_ON, 0) == 1;
-			
-									if (isEnabledAirplaneMode){
-										Settings.System.putInt(getContentResolver(),
-									      		Settings.System.AIRPLANE_MODE_ON,0);
-										pressed.setText(R.string.on);
-									}
-									else{
-										Settings.System.putInt(getContentResolver(),
-									      		Settings.System.AIRPLANE_MODE_ON,1);
-										pressed.setText(R.string.off);
-									}
-									break;
+			case R.string.airplaneMode:	boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
+										Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+				
+										if (isEnabledAirplaneMode){
+											Settings.System.putInt(getContentResolver(),
+										      		Settings.System.AIRPLANE_MODE_ON,0);
+											pressed.setBackgroundResource(R.drawable.airplane_off);
+										}
+										else{
+											Settings.System.putInt(getContentResolver(),
+										      		Settings.System.AIRPLANE_MODE_ON,1);
+											pressed.setBackgroundResource(R.drawable.airplane_on);
+										}
+										break;
 									
-			case R.id.game1Level1: 	launchActivity(1,0);
-									break;
-			case R.id.game1Level2: 	launchActivity(1,1);
-									break;
-			case R.id.game1Level3: 	launchActivity(1,3);
-									break;
-			case R.id.game1Level4: 	launchActivity(1,2);
-									break;
-			case R.id.game2Level1: 	launchActivity(2,1);
-									break;
-			case R.id.game2Level2: 	launchActivity(2,0);
-									break;
-			case R.id.game2Level3: 	launchActivity(2,3);
-									break;
-			case R.id.game2Level4: 	launchActivity(2,2);
-									break;
-			case R.id.about:		break;
+			case R.string.game1Level1: 	launchActivity(1,0);
+										break;
+			case R.string.game1Level2: 	launchActivity(1,1);
+										break;
+			case R.string.game1Level3: 	launchActivity(1,3);
+										break;
+			case R.string.game1Level4: 	launchActivity(1,2);
+										break;
+			case R.string.game2Level1: 	launchActivity(2,1);
+										break;
+			case R.string.game2Level2: 	launchActivity(2,0);
+										break;
+			case R.string.game2Level3: 	launchActivity(2,3);
+										break;
+			case R.string.game2Level4: 	launchActivity(2,2);
+										break;
+										
+			case R.string.aboutButton:	break;
 			
-			case R.id.music:		Intent intent = new Intent(this, MusicPlayer.class);
-									if (musicEnabled){
-										stopService(intent);
-										pressed.setText(R.string.on);
-										musicEnabled = false;
-									}
-									else{
-										startService(intent);
-										pressed.setText(R.string.off);
-										musicEnabled = true;
-									}
-									break;
+			case R.string.music:		Intent intent = new Intent(this, MusicPlayer.class);
+										if (musicEnabled){
+											stopService(intent);
+											pressed.setBackgroundResource(R.drawable.music_off);
+											musicEnabled = false;
+										}
+										else{
+											startService(intent);
+											pressed.setBackgroundResource(R.drawable.music_on);
+											musicEnabled = true;
+										}
+										break;
 		}
 	}
 	public void launchActivity(int game, int level)
@@ -175,5 +177,35 @@ public class Main extends Activity implements OnClickListener{
 			intent.putExtra("level",level);
 			intent.putExtra("game", game);
 			startActivity(intent);
+	}
+	public void drawButtons()
+	{	
+        for (int i=0;i<SQUARENUMBERX;i++)
+        {
+        	for (int n=0;n<SQUARENUMBERY;n++)
+        	{
+        		menuElements[i][n] = new FunnyButton(this,0,false);
+        		if (i == 0)
+        			menuElements[i][n].getButton().setBackgroundResource(R.drawable.button_11);
+        		else
+        			menuElements[i][n].getButton().setBackgroundResource(R.drawable.button_12);
+				
+        		int posX = PADDING_LEFT + 1 +  (squareSizeXMenu + PADDING)*i;
+        		int posY = PADDING_TOP + 1 + (squareSizeYMenu + PADDING)*n;	
+        		
+        		menuElements[i][n].getButton().setOnClickListener(this);
+        		absLayout.addView(menuElements[i][n], new LayoutParams(squareSizeXMenu,squareSizeYMenu,posX,posY));
+	        }
+        }
+        for (int x=0;x<BOTTOMBUTTONS;x++)
+        {
+        	settingElements[x] = new FunnyButton(this,0,false);
+        	
+        	int posXBottom = BOTTOMBUTTONS_PADDING_SIDE + 1 +  (squareSizeXSettings + PADDING)*x;
+    		int posYBottom = BOTTOMBUTTONS_PADDING_TOP + 1;
+    		
+    		settingElements[x].getButton().setOnClickListener(this);
+    		absLayout.addView(settingElements[x], new LayoutParams(squareSizeXSettings,squareSizeYSettings,posXBottom,posYBottom));
+        }
 	}
 }

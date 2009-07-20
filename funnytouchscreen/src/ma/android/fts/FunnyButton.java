@@ -1,5 +1,7 @@
 package ma.android.fts;
 
+import java.util.Random;
+
 import android.content.Context;
 import android.graphics.Point;
 import android.view.Gravity;
@@ -15,20 +17,14 @@ public class FunnyButton extends AbsoluteLayout {
 	private int serial;
 	private int dotNumber;
 
-	static int [] buttonBackground = new int [8];
+	static int [] buttonBackground = new int [5];
 
 	static {
-		buttonBackground[0] = R.drawable.button1;
-		buttonBackground[1] = R.drawable.button2;
-		buttonBackground[2] = R.drawable.button1;
-		buttonBackground[3] = R.drawable.button2;
-		buttonBackground[4] = R.drawable.button1;
-		buttonBackground[5] = R.drawable.button2;
-		/*buttonBackground[2] = R.drawable.button3;
-		buttonBackground[3] = R.drawable.button4;
-		buttonBackground[4] = R.drawable.button5;
-		buttonBackground[5] = R.drawable.button6;*/
-
+		buttonBackground[0] = R.drawable.button_1;
+		buttonBackground[1] = R.drawable.button_2;
+		buttonBackground[2] = R.drawable.button_3;
+		buttonBackground[3] = R.drawable.button_4;
+		buttonBackground[4] = R.drawable.button_5;
 	}
 
 	private static final Point[][] DOTS = new Point[][] {
@@ -47,6 +43,7 @@ public class FunnyButton extends AbsoluteLayout {
 		super(context);
 		this.dotNumber = dotNumber;
 		this.serial = 0;
+		Random random = new Random();
 		button = new Button(context);
 		button.setGravity(Gravity.CENTER);
 		button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
@@ -124,6 +121,10 @@ public class FunnyButton extends AbsoluteLayout {
 	public void setButtonBackground(int background)
 	{
 		button.setBackgroundResource(buttonBackground[background]);
+	}
+	public void setButtonBackgroundByResource(int background)
+	{
+		button.setBackgroundResource(background);
 	}
 	public void setSerial(int s)
 	{
