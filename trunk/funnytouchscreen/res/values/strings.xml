@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Funny Screen Touch</string>	
+    <string name="app_name">Funny Touch Screen </string>	
     <string name="starButton">Start</string>
     <string name="exitButton">Exit</string>
     <string name="airplaneMode">Airplane Mode</string>
     <string name="music">Music</string>
+    <string name="aboutButton">About</string>
     <string name="on">ON</string>
     <string name="off">OFF</string>
     <string name="about">About...</string>
+    <string name="game1Level1">game1Level1</string>
+    <string name="game2Level1">game2Level1</string>
+    <string name="game1Level2">game1Level2</string>
+    <string name="game2Level2">game2Level2</string>
+    <string name="game1Level3">game1Level3</string>
+   	<string name="game2Level3">game2Level3</string>
+    <string name="game1Level4">game1Level4</string>
+    <string name="game2Level4">game2Level4</string>
 </resources>
