@@ -17,4 +17,10 @@
    	<string name="game2Level3">game2Level3</string>
     <string name="game1Level4">game1Level4</string>
     <string name="game2Level4">game2Level4</string>
+    <string name="airplaneModeOn">Setting airplane mode ON</string>
+    <string name="airplaneModeOff">Setting airplane mode OFF</string>
+    <string name="musicOn">Turning music ON</string>
+    <string name="musicOff">Turning music OFF</string>
+    <string name="startingGame">Starting game</string>
+    <string name="atDifficulty">at difficulty level</string>
 </resources>
