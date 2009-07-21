@@ -33,6 +33,7 @@ public class MusicPlayer extends Service{
 		musics.add(R.raw.music1);
 		musics.add(R.raw.music2);
 		musics.add(R.raw.music3);
+		musics.add(R.raw.music4);
 		resources = new Resources(this.getAssets(), new DisplayMetrics(), new
 				Configuration());
 		Collections.shuffle(musics);

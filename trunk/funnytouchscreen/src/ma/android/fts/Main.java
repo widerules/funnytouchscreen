@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Display;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.AbsoluteLayout;
