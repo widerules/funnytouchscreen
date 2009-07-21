@@ -18,11 +18,6 @@ public class AnimationFactory {
 	static int[] animationImages = new int[3]; 
 	private static Random random = new Random();
 	
-	static {
-		animationImages [0] = R.drawable.star;
-		animationImages [1] = R.drawable.star;
-		animationImages [2] = R.drawable.star;
-	}
 
 	public static FinalAnimation generateAnimation(int height, int width, Context context)
 	{	
@@ -31,9 +26,7 @@ public class AnimationFactory {
 		
 		ImageView animationImage = new ImageView(context);
 		
-		int selectedImage = random.nextInt(3);
-		
-		animationImage.setImageResource(animationImages[selectedImage]);
+		animationImage.setImageResource(R.drawable.animation);
 		int imageWidth = animationImage.getDrawable().getMinimumWidth();
 		int imageHeight = animationImage.getDrawable().getMinimumHeight();
 		
