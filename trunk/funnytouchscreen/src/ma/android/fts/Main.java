@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.AbsoluteLayout.LayoutParams;
 
 
@@ -41,7 +42,8 @@ public class Main extends Activity implements OnClickListener{
 	
 	private int squareSizeXSettings;
 	private int squareSizeYSettings;
-	
+	private Intent musicIntent;
+	private Intent ftsIntent;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -113,16 +115,19 @@ public class Main extends Activity implements OnClickListener{
 		{
 			case R.string.airplaneMode:	boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
 										Settings.System.AIRPLANE_MODE_ON, 0) == 1;
-				
+										
+
 										if (isEnabledAirplaneMode){
 											Settings.System.putInt(getContentResolver(),
 										      		Settings.System.AIRPLANE_MODE_ON,0);
 											pressed.setBackgroundResource(R.drawable.airplane_off);
+											Toast.makeText(this, getText(R.string.airplaneModeOff), Toast.LENGTH_SHORT).show();
 										}
 										else{
 											Settings.System.putInt(getContentResolver(),
 										      		Settings.System.AIRPLANE_MODE_ON,1);
 											pressed.setBackgroundResource(R.drawable.airplane_on);
+											Toast.makeText(this, getText(R.string.airplaneModeOn), Toast.LENGTH_SHORT).show();
 										}
 										break;
 									
@@ -145,37 +150,49 @@ public class Main extends Activity implements OnClickListener{
 										
 			case R.string.aboutButton:	break;
 			
-			case R.string.music:		Intent intent = new Intent(this, MusicPlayer.class);
+			case R.string.music:		musicIntent = new Intent(this, MusicPlayer.class);
 										if (musicEnabled){
-											stopService(intent);
+											stopService(musicIntent);
 											pressed.setBackgroundResource(R.drawable.music_off);
 											musicEnabled = false;
+											Toast.makeText(this, getText(R.string.musicOff), Toast.LENGTH_SHORT).show();
 										}
 										else{
-											startService(intent);
+											startService(musicIntent);
 											pressed.setBackgroundResource(R.drawable.music_on);
 											musicEnabled = true;
+											Toast.makeText(this, getText(R.string.musicOn), Toast.LENGTH_SHORT).show();
 										}
 										break;
 		}
 	}
 	public void launchActivity(int game, int level)
 	{
-		Intent intent = new Intent(this, FunnyTouchScreenActivity.class);
+		ftsIntent = new Intent(this, FunnyTouchScreenActivity.class);
 		if (game == 1)
-		{	intent.putExtra("squareNumberX",1);
-			intent.putExtra("squareNumberY", 2);
-			intent.putExtra("repeats",0);
+		{
+			if (level == 0 || level == 1)
+			{
+				ftsIntent.putExtra("squareNumberX",2);
+				ftsIntent.putExtra("squareNumberY", 2);
+				ftsIntent.putExtra("repeats",0);
+			}
+			if (level == 2 || level == 3)
+			{
+				ftsIntent.putExtra("squareNumberX",2);
+				ftsIntent.putExtra("squareNumberY", 3);
+				ftsIntent.putExtra("repeats",0);
+			}
 		}
 		else
 		{
-			intent.putExtra("squareNumberX",3);
-			intent.putExtra("squareNumberY", 4);
-			intent.putExtra("repeats",0);
+			ftsIntent.putExtra("squareNumberX",3);
+			ftsIntent.putExtra("squareNumberY", 4);
+			ftsIntent.putExtra("repeats",0);
 		}
-			intent.putExtra("level",level);
-			intent.putExtra("game", game);
-			startActivity(intent);
+			ftsIntent.putExtra("level",level);
+			ftsIntent.putExtra("game", game);
+			startActivity(ftsIntent);
 	}
 	public void drawButtons()
 	{	
@@ -183,7 +200,7 @@ public class Main extends Activity implements OnClickListener{
         {
         	for (int n=0;n<SQUARENUMBERY;n++)
         	{
-        		menuElements[i][n] = new FunnyButton(this,0,false);
+        		menuElements[i][n] = new FunnyButton(this,0,false,false);
         		if (i == 0)
         			menuElements[i][n].getButton().setBackgroundResource(R.drawable.button_11);
         		else
@@ -198,7 +215,7 @@ public class Main extends Activity implements OnClickListener{
         }
         for (int x=0;x<BOTTOMBUTTONS;x++)
         {
-        	settingElements[x] = new FunnyButton(this,0,false);
+        	settingElements[x] = new FunnyButton(this,0,false,false);
         	
         	int posXBottom = BOTTOMBUTTONS_PADDING_SIDE + 1 +  (squareSizeXSettings + PADDING)*x;
     		int posYBottom = BOTTOMBUTTONS_PADDING_TOP + 1;
@@ -206,5 +223,19 @@ public class Main extends Activity implements OnClickListener{
     		settingElements[x].getButton().setOnClickListener(this);
     		absLayout.addView(settingElements[x], new LayoutParams(squareSizeXSettings,squareSizeYSettings,posXBottom,posYBottom));
         }
+	}
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+		if (ftsIntent == null)
+			stopService(musicIntent);
+	}
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		if (musicIntent != null)
+			stopService(musicIntent);
 	}
 }

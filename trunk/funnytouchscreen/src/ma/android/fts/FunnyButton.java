@@ -32,22 +32,22 @@ public class FunnyButton extends AbsoluteLayout{
 		buttonBackground[2] = R.drawable.button_3;
 		buttonBackground[3] = R.drawable.button_4;
 		buttonBackground[4] = R.drawable.button_5;
-		buttonBackground[5] = R.drawable.button_12;
+		buttonBackground[5] = R.drawable.button_6;
 	}
 
 	private static final Point[][] DOTS = new Point[][] {
 		{new Point(0,0),null, null, null, null, null, null, null, null }, // one button
-		{new Point(32,32),new Point(-32,-32), null, null, null, null, null, null, null }, // two buttons  
-		{new Point(32,32),new Point(0,0), new Point(-32,-32), null, null, null, null, null, null }, // three buttons
-		{new Point(32,32),new Point(32,-32), new Point(-32,-32), new Point(-32,32), null, null, null, null, null }, 
-		{new Point(32,32),new Point(32,-32), new Point(-32,-32), new Point(-32,32), new Point(0,0), null, null, null, null }, 
-		{new Point(32,32),new Point(32,-0), new Point(32,-32), new Point(-32,32), new Point(-32,0), new Point(-32,-32), null, null, null },
-		{new Point(32,32),new Point(32,-0), new Point(32,-32), new Point(-32,32), new Point(-32,0), new Point(-32,-32), new Point(0,0), null, null },
-		{new Point(32,32),new Point(32,12), new Point(32,-12), new Point(-32,-32), new Point(-32,32), new Point(-32,12), new Point(-32,-12), new Point(-32,-32), null },
-		{new Point(32,32),new Point(32,0), new Point(32,-32), new Point(0,32), new Point(0,0), new Point(0,-32), new Point(-32,32), new Point(-32,0), new Point(-32,-32) },
+		{new Point(28,28),new Point(-28,-28), null, null, null, null, null, null, null }, // two buttons  
+		{new Point(28,28),new Point(0,0), new Point(-28,-28), null, null, null, null, null, null }, // three buttons
+		{new Point(28,28),new Point(28,-28), new Point(-28,-28), new Point(-28,28), null, null, null, null, null }, 
+		{new Point(28,28),new Point(28,-28), new Point(-28,-28), new Point(-28,28), new Point(0,0), null, null, null, null }, 
+		{new Point(28,28),new Point(28,-0), new Point(28,-28), new Point(-28,28), new Point(-28,0), new Point(-28,-28), null, null, null },
+		{new Point(28,28),new Point(28,-0), new Point(28,-28), new Point(-28,28), new Point(-28,0), new Point(-28,-28), new Point(0,0), null, null },
+		{new Point(28,28),new Point(28,8), new Point(28,-8), new Point(28,-28), new Point(-28,28), new Point(-28,8), new Point(-28,-8), new Point(-28,-28), null },
+		{new Point(28,28),new Point(28,0), new Point(28,-28), new Point(0,28), new Point(0,0), new Point(0,-28), new Point(-28,28), new Point(-28,0), new Point(-28,-28) },
 	};
 
-	public FunnyButton(Context context, int dotNumber, boolean image) {
+	public FunnyButton(Context context, int dotNumber, boolean image, boolean dotSize) {
 		super(context);
 		this.dotNumber = dotNumber;
 		this.serial = 0;
@@ -56,10 +56,10 @@ public class FunnyButton extends AbsoluteLayout{
 		button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
 		addView(button);
 		
-		initDots(image);
+		initDots(image,dotSize);
 	}
 
-	private void initDots(boolean image) {
+	private void initDots(boolean image, boolean dotSize) {
 		if (dots != null) {
 			for (ImageView dot : dots) {
 				if (dot != null) removeView(dot);
@@ -73,8 +73,10 @@ public class FunnyButton extends AbsoluteLayout{
 				if (DOTS[dotNumber-1][x]!= null){
 					dots[x]= new ImageView(getContext());
 					if (image)
-						dots[x].setImageResource(R.drawable.cat);
-					else
+						dots[x].setImageResource(R.drawable.marker);
+					else if (dotSize)
+						dots[x].setImageResource(R.drawable.dotbig);
+					else if (!dotSize)
 						dots[x].setImageResource(R.drawable.dot);
 					addView(dots[x]);
 				}
@@ -88,18 +90,25 @@ public class FunnyButton extends AbsoluteLayout{
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		// TODO Auto-generated method stub
+		int proportionY;
+		if (getHeight()/3*2 > getWidth())
+			proportionY = getHeight()/3/28;
+		else
+			proportionY = getHeight()/2/38;
+		
+		int proportionX = getWidth()/2/38;
 		button.layout(0, 0, getWidth(),getHeight());
 		if (dotNumber -1 != -1)
 		{
-			for (int i = 0;i<9;i++)
+			for (int i = 0;i<9;i++)  
 			{
 				Point dotPosition = DOTS[dotNumber-1][i];
 				if (dots[i]!=null){
 					Point squareCenter = new Point(getWidth()/2,getHeight()/2);
 					int dotSizeX = dots[i].getDrawable().getMinimumWidth();
 					int dotSizeY = dots[i].getDrawable().getMinimumHeight();
-					int startPositionX = squareCenter.x + dotPosition.x - dotSizeX/2;
-					int startPositionY = squareCenter.y + dotPosition.y - dotSizeY/2;
+					int startPositionX = squareCenter.x + (dotPosition.x * proportionX) - dotSizeX/2;
+					int startPositionY = squareCenter.y + (dotPosition.y * proportionY) - dotSizeY/2;
 					dots[i].layout(startPositionX, startPositionY, startPositionX + dotSizeX, startPositionY + dotSizeY);
 				}
 				else{ 
@@ -124,7 +133,7 @@ public class FunnyButton extends AbsoluteLayout{
 	public void placeDot(boolean image)
 	{
 		dotNumber = 1;
-		initDots(image);
+		initDots(image,true);
 	}
 	public void setButtonBackground(int background)
 	{
