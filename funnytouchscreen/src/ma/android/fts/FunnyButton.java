@@ -1,23 +1,30 @@
 package ma.android.fts;
 
-import java.util.Random;
-
 import android.content.Context;
 import android.graphics.Point;
 import android.view.Gravity;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public class FunnyButton extends AbsoluteLayout {
+public class FunnyButton extends AbsoluteLayout{
+
+	public static final int BUTTON_ANIMATION_DURATION = 300;
 
 	private ImageView[]dots;
 	private Button button;
 	private int serial;
 	private int dotNumber;
+	private AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingOutElement(1.0f,0.0f,BUTTON_ANIMATION_DURATION,0,0);
+	private AlphaAnimation blink = (AlphaAnimation) AnimationFactory.blinkingElement(1.0f, 0.0f, 300, Animation.INFINITE, Animation.REVERSE);
 
-	static int [] buttonBackground = new int [5];
+
+	static int [] buttonBackground = new int [6];
 
 	static {
 		buttonBackground[0] = R.drawable.button_1;
@@ -25,25 +32,25 @@ public class FunnyButton extends AbsoluteLayout {
 		buttonBackground[2] = R.drawable.button_3;
 		buttonBackground[3] = R.drawable.button_4;
 		buttonBackground[4] = R.drawable.button_5;
+		buttonBackground[5] = R.drawable.button_12;
 	}
 
 	private static final Point[][] DOTS = new Point[][] {
 		{new Point(0,0),null, null, null, null, null, null, null, null }, // one button
-		{new Point(35,35),new Point(-35,-35), null, null, null, null, null, null, null }, // two buttons
-		{new Point(35,35),new Point(0,0), new Point(-35,-35), null, null, null, null, null, null }, // three buttons
-		{new Point(35,35),new Point(35,-35), new Point(-35,-35), new Point(-35,35), null, null, null, null, null }, 
-		{new Point(35,35),new Point(35,-35), new Point(-35,-35), new Point(-35,35), new Point(0,0), null, null, null, null }, 
-		{new Point(35,35),new Point(35,-0), new Point(35,-35), new Point(-35,35), new Point(-35,0), new Point(-35,-35), null, null, null },
-		{new Point(35,35),new Point(35,-0), new Point(35,-35), new Point(-35,35), new Point(-35,0), new Point(-35,-35), new Point(0,0), null, null },
-		{new Point(35,35),new Point(35,15), new Point(35,-15), new Point(-35,-35), new Point(-35,35), new Point(-35,15), new Point(-35,-15), new Point(-35,-35), null },
-		{new Point(35,35),new Point(35,0), new Point(35,-35), new Point(0,35), new Point(0,0), new Point(0,-35), new Point(-35,35), new Point(-35,0), new Point(-35,-35) },
+		{new Point(32,32),new Point(-32,-32), null, null, null, null, null, null, null }, // two buttons  
+		{new Point(32,32),new Point(0,0), new Point(-32,-32), null, null, null, null, null, null }, // three buttons
+		{new Point(32,32),new Point(32,-32), new Point(-32,-32), new Point(-32,32), null, null, null, null, null }, 
+		{new Point(32,32),new Point(32,-32), new Point(-32,-32), new Point(-32,32), new Point(0,0), null, null, null, null }, 
+		{new Point(32,32),new Point(32,-0), new Point(32,-32), new Point(-32,32), new Point(-32,0), new Point(-32,-32), null, null, null },
+		{new Point(32,32),new Point(32,-0), new Point(32,-32), new Point(-32,32), new Point(-32,0), new Point(-32,-32), new Point(0,0), null, null },
+		{new Point(32,32),new Point(32,12), new Point(32,-12), new Point(-32,-32), new Point(-32,32), new Point(-32,12), new Point(-32,-12), new Point(-32,-32), null },
+		{new Point(32,32),new Point(32,0), new Point(32,-32), new Point(0,32), new Point(0,0), new Point(0,-32), new Point(-32,32), new Point(-32,0), new Point(-32,-32) },
 	};
 
 	public FunnyButton(Context context, int dotNumber, boolean image) {
 		super(context);
 		this.dotNumber = dotNumber;
 		this.serial = 0;
-		Random random = new Random();
 		button = new Button(context);
 		button.setGravity(Gravity.CENTER);
 		button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
@@ -101,6 +108,7 @@ public class FunnyButton extends AbsoluteLayout {
 			}
 		}
 	}
+
 	public Button getButton()
 	{
 		return button;
@@ -130,9 +138,32 @@ public class FunnyButton extends AbsoluteLayout {
 	{
 		serial = s;
 	}
-
 	public int getSerial() {
 		return serial;
 	}
+	public  void startBlinking()
+	{
+		startAnimation(blink);
+	}
+	public void stopBlinking()
+	{
+		setAnimation(null);
+	}
 
+	public void disappear(final Runnable runnable) {
+		if (runnable != null) {
+			dissapear.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					setVisibility(View.INVISIBLE);
+					runnable.run();
+				}
+				public void onAnimationRepeat(Animation animation) {
+				}
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+		}
+		startAnimation(dissapear);
+	}
 }
