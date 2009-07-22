@@ -34,6 +34,7 @@ public class Main extends Activity implements OnClickListener{
 	private int width;
 	private int height;
 	private boolean musicEnabled;
+	private boolean gameLaunched;
 	private AbsoluteLayout absLayout;
 	private FunnyButton[][] menuElements;
 	private FunnyButton[] settingElements;
@@ -51,6 +52,7 @@ public class Main extends Activity implements OnClickListener{
         super.onCreate(savedInstanceState);
         
         musicEnabled = false;
+        gameLaunched = false;
         
         absLayout = new AbsoluteLayout(this);
         absLayout.setBackgroundResource(R.drawable.main_background); 
@@ -135,17 +137,17 @@ public class Main extends Activity implements OnClickListener{
 										break;
 			case R.string.game1Level2: 	launchActivity(1,1);
 										break;
-			case R.string.game1Level3: 	launchActivity(1,3);
+			case R.string.game1Level3: 	launchActivity(1,2);
 										break;
-			case R.string.game1Level4: 	launchActivity(1,2);
+			case R.string.game1Level4: 	launchActivity(1,3);
 										break;
-			case R.string.game2Level1: 	launchActivity(2,1);
+			case R.string.game2Level1: 	launchActivity(2,0);
 										break;
-			case R.string.game2Level2: 	launchActivity(2,0);
+			case R.string.game2Level2: 	launchActivity(2,1);
 										break;
-			case R.string.game2Level3: 	launchActivity(2,3);
+			case R.string.game2Level3: 	launchActivity(2,2);
 										break;
-			case R.string.game2Level4: 	launchActivity(2,2);
+			case R.string.game2Level4: 	launchActivity(2,3);
 										break;
 										
 			case R.string.aboutButton:	break;
@@ -190,9 +192,19 @@ public class Main extends Activity implements OnClickListener{
 			ftsIntent.putExtra("squareNumberY", 4);
 			ftsIntent.putExtra("repeats",0);
 		}
-			ftsIntent.putExtra("level",level);
-			ftsIntent.putExtra("game", game);
-			startActivity(ftsIntent);
+		ftsIntent.putExtra("level",level);
+		ftsIntent.putExtra("game", game);
+		ftsIntent.putExtra("firstRun", true);
+		ftsIntent.putExtra("music",musicEnabled);
+		startActivityForResult(ftsIntent,1);
+		gameLaunched = true;
+		
+	}
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{
+		if (requestCode == resultCode)
+			gameLaunched = false;
+			
 	}
 	public void drawButtons()
 	{	
@@ -202,9 +214,9 @@ public class Main extends Activity implements OnClickListener{
         	{
         		menuElements[i][n] = new FunnyButton(this,0,false,false);
         		if (i == 0)
-        			menuElements[i][n].getButton().setBackgroundResource(R.drawable.button_11);
-        		else
         			menuElements[i][n].getButton().setBackgroundResource(R.drawable.button_12);
+        		else
+        			menuElements[i][n].getButton().setBackgroundResource(R.drawable.button_11);
 				
         		int posX = PADDING_LEFT + 1 +  (squareSizeXMenu + PADDING)*i;
         		int posY = PADDING_TOP + 1 + (squareSizeYMenu + PADDING)*n;	
@@ -228,8 +240,6 @@ public class Main extends Activity implements OnClickListener{
 	public void onStop()
 	{
 		super.onStop();
-		if (ftsIntent == null)
-			stopService(musicIntent);
 	}
 	@Override
 	public void onDestroy()

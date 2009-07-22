@@ -6,12 +6,17 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
@@ -21,6 +26,7 @@ import android.view.animation.Animation;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SlidingDrawer;
 import android.widget.Toast;
 import android.widget.AbsoluteLayout.LayoutParams;
 
@@ -40,13 +46,16 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
     private int game;
     private int selectedButtonNumber;
     private MediaPlayer mp;
+    private MusicPlayer musicPlayer;
     private FunnyButton[][] screenElements;
 	private AbsoluteLayout absLayout;
 	private Resources resources;
 	private static Random random = new Random();
-	
+	private boolean music= false;
 	private FunnyButton blinkingButton;
-	private int runningAnimation = 0;
+	private int blockAnimation = 0;
+	private int blockSound = 0;
+	private boolean playingAplause = false;
 	static int [] background = new int[27];
 	
 	
@@ -89,12 +98,28 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         resources = new Resources(this.getAssets(), new DisplayMetrics(), new
 				Configuration());
         
+        Intent musicIntent = new Intent(this, MusicPlayer.class);
+        ServiceConnection conn = new ServiceConnection(){
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				// TODO Auto-generated method stub
+				musicPlayer = ( (MusicPlayer.MusicPlayerBinder ) service).getService( );
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				// TODO Auto-generated method stub
+				musicPlayer = null;
+			}
+
+        	};
+        bindService(musicIntent,conn,Context.BIND_AUTO_CREATE);
         Intent iParameters = getIntent();
         squareNumberX = iParameters.getIntExtra("squareNumberX", 0);
         squareNumberY = iParameters.getIntExtra("squareNumberY", 0);
         level = iParameters.getIntExtra("level", 0);
         game = iParameters.getIntExtra("game", 0);
-        
+        music = iParameters.getBooleanExtra("music", false);
         random = new Random();
         selectedButtonNumber = 1;
         
@@ -115,28 +140,45 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         int leftHeight = height - (squareNumberY + 1 ) * PADDING;
         squareSizeY = leftHeight / squareNumberY;
         
+        mp = new MediaPlayer();
+        mp.setOnCompletionListener(new OnCompletionListener(){
+
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				// TODO Auto-generated method stub
+				if (playingAplause && music)
+					musicPlayer.getMediaPlayer().start();
+				blockSound--;
+			}});
         drawButtons();
         
         this.setContentView(absLayout);
-        Toast.makeText(this, getText(R.string.startingGame) + " " + game + " " 
-        		+ getText(R.string.atDifficulty) + " " + (level+1) , Toast.LENGTH_SHORT).show();
+        boolean firsRun = iParameters.getBooleanExtra("firstRun", false);
+        if (firsRun)
+        {
+	        Toast.makeText(this, getText(R.string.startingGame) + " " + game + " " 
+	        		+ getText(R.string.atDifficulty) + " " + (level+1) , Toast.LENGTH_SHORT).show();
+        }
     }
     
 	public void onClick(View v) 
 	{
-		if (runningAnimation == 0)
+		if (blockAnimation == 0 && blockSound == 0)
 		{
 			Button pressed = (Button)v;
+			
 			FunnyButton pressedParent = (FunnyButton) pressed.getParent();
 			if (game ==1)
 			{
 				switch (level)
 				{
-					case 0: makeButtonDisappear(pressedParent);
+					case 0: pressed.setOnClickListener(null);
+							makeButtonDisappear(pressedParent);
 							break;
 					
 					case 1:	if (pressedParent.getDotNumer()==1)
 							{	
+								pressed.setOnClickListener(null);
 								makeButtonDisappear(pressedParent);
 							}
 							else 
@@ -145,7 +187,18 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 							}
 							break;
 							
-					case 2: if ((Integer.parseInt((String) pressed.getText())==selectedButtonNumber))
+					case 2: if (pressedParent.getDotNumer()==selectedButtonNumber)
+							{
+								selectedButtonNumber++;
+								makeButtonDisappear(pressedParent);
+							}
+							else
+							{
+								playSound(R.raw.button_ko);
+							}
+							break;		
+					
+					case 3: if ((Integer.parseInt((String) pressed.getText())==selectedButtonNumber))
 							{
 								selectedButtonNumber++;
 								makeButtonDisappear(pressedParent);
@@ -155,16 +208,6 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 								playSound(R.raw.button_ko);
 							}
 							break;
-					
-					case 3: if (pressedParent.getDotNumer()==selectedButtonNumber)
-							{
-								selectedButtonNumber++;
-								makeButtonDisappear(pressedParent);
-							}
-							else
-							{
-								playSound(R.raw.button_ko);
-							}
 				}
 			}
 			else if (game == 2)
@@ -188,11 +231,10 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 								}
 								break;
 								
-						case 2:	if ((Integer.parseInt((String) pressed.getText())==selectedButtonNumber))
+						case 2:	if (pressedParent.getDotNumer()==selectedButtonNumber)
 								{
 									pressedParent.startBlinking();
 									blinkingButton = pressedParent;
-									selectedButtonNumber++;
 								}
 								else
 								{
@@ -200,10 +242,11 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 								}
 								break;
 								
-						case 3: if (pressedParent.getDotNumer()==selectedButtonNumber)
+						case 3: if ((Integer.parseInt((String) pressed.getText())==selectedButtonNumber))
 								{
 									pressedParent.startBlinking();
 									blinkingButton = pressedParent;
+									selectedButtonNumber++;
 								}
 								else
 								{
@@ -218,6 +261,8 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 					{ 
 						case 0:	if (pressedParent.getSerial()== blinkingButton.getSerial())
 								{
+									blinkingButton.getButton().setOnClickListener(null);
+									pressed.setOnClickListener(null);
 									coupleDisapear(pressedParent);
 								}
 								else
@@ -228,6 +273,8 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 								
 						case 1:	if (pressedParent.getDotNumer() == 1)
 								{
+									blinkingButton.getButton().setOnClickListener(null);
+									pressed.setOnClickListener(null);
 									coupleDisapear(pressedParent);
 								}
 								else
@@ -236,9 +283,10 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 								}
 								break;
 							
-						case 2:	if (pressed.getText().equals(blinkingButton.getButton().getText()))
+						case 2:	if (blinkingButton.getDotNumer()== pressedParent.getDotNumer())
 								{
 									coupleDisapear(pressedParent);
+									selectedButtonNumber++;
 								}
 								else
 								{
@@ -246,10 +294,10 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 								}
 								break;
 								
-						case 3: if (blinkingButton.getDotNumer()== pressedParent.getDotNumer())
+						case 3: 
+								if (pressed.getText().equals(blinkingButton.getButton().getText()))
 								{
 									coupleDisapear(pressedParent);
-									selectedButtonNumber++;
 								}
 								else
 								{
@@ -263,15 +311,24 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	}
 	public void makeButtonDisappear(FunnyButton pressedParent)
 	{
-		runningAnimation++;
+		blockAnimation++;
 		new Thread(dissapearSound).start();
 		pressedParent.disappear(disappearAnimationEnded);
 	}
 	public void increaseLevel()
 	{
+		/*try {
+			Thread.sleep(15000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		finish();
 		Intent iParameters = getIntent();
+		iParameters.putExtra("firstRun", false);
 		if (squareNumberX != MAX_SIZE  ||
-			squareNumberX == MAX_SIZE && iParameters .getIntExtra("repeats", 0)<1)
+			squareNumberX == MAX_SIZE && iParameters.getIntExtra("repeats", 0)<1)
 		{	
 			if (iParameters .getIntExtra("repeats", 0) == 0)
 			{
@@ -288,12 +345,21 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 				startActivity(iParameters);
 			}
 		}
+		else 
+		{
+			if (musicPlayer.getMediaPlayer() != null && music)
+			{
+				musicPlayer.getMediaPlayer().stop();
+			}
+			playSound(R.raw.aplause);
+			playingAplause = true;
+		}
 	}
 	public void coupleDisapear(FunnyButton parent)
 	{
 		makeButtonDisappear(parent);
-		blinkingButton.setAnimation(null);
 		blinkingButton.setVisibility(View.INVISIBLE);
+		blinkingButton.setAnimation(null);
 		blinkingButton = null;
 	}
 	
@@ -305,7 +371,6 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 
 			public void onAnimationEnd(Animation animation) {
 					// TODO Auto-generated method stub
-				finish();
 				increaseLevel();
 			}
 
@@ -357,6 +422,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 			if (game == 2)
 			{
 				selected.placeDot(true);
+				remainingButtons.remove(selected);
 				for (int i=0;i<remainingButtons.size();i++) 
 				{
 					FunnyButton fb = remainingButtons.get(i);
@@ -395,8 +461,6 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 					image2SquareX--;
 		}
 		boolean game1Dot = false;
-		
-		
 		if ((level == 2 || level == 3) || (level == 0 && game == 2)||(level == 1 && game == 2)){
         	numbers = new ArrayList<Integer>();
         	if (game == 2){
@@ -503,14 +567,15 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         					
         					break;
     		
-        			case 2:	selected = random.nextInt(numbers.size()); 
-	        				dotNumber = 0;
-        					screenElements[i][n] = new FunnyButton(this,dotNumber,false,false);
-        					screenElements[i][n].setButtonBackground(level34Background);
-	        				screenElements[i][n].getButton().setText(numbers.get(selected).toString());
-	        				screenElements[i][n].getButton().setTextSize(50);
-	        				if (game == 2)
-	        				{
+        			case 2:	selected = random.nextInt(numbers.size());
+							dotNumber = numbers.get(selected);
+							if (squareNumberX * squareNumberY <= 4)
+								screenElements[i][n] = new FunnyButton(this,dotNumber,false,true);
+							else
+								screenElements[i][n] = new FunnyButton(this,dotNumber,false,false);
+							screenElements[i][n].setButtonBackground(level34Background);
+							if (game == 2)
+		    				{
 		        				if (!drawed.get(selected))
 		        				{
 		        					drawed.set(selected, true);
@@ -520,20 +585,19 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		        					numbers.remove(selected);
 		        					drawed.remove(selected);
 		        				}
-	        				}
-	        				else
-	        					numbers.remove(selected);
-	        				break;
+		    				}
+		    				else
+		    					numbers.remove(selected);
+		    				break;
 	        	
-        			case 3:	selected = random.nextInt(numbers.size());
-        					dotNumber = numbers.get(selected);
-        					if (squareNumberX * squareNumberY <= 4)
-        						screenElements[i][n] = new FunnyButton(this,dotNumber,false,true);
-        					else
-        						screenElements[i][n] = new FunnyButton(this,dotNumber,false,false);
-        					screenElements[i][n].setButtonBackground(level34Background);
-        					if (game == 2)
-	        				{
+        			case 3: selected = random.nextInt(numbers.size()); 
+		    				dotNumber = 0;
+							screenElements[i][n] = new FunnyButton(this,dotNumber,false,false);
+							screenElements[i][n].setButtonBackground(level34Background);
+		    				screenElements[i][n].getButton().setText(numbers.get(selected).toString());
+		    				screenElements[i][n].getButton().setTextSize(50);
+		    				if (game == 2)
+		    				{
 		        				if (!drawed.get(selected))
 		        				{
 		        					drawed.set(selected, true);
@@ -543,10 +607,10 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		        					numbers.remove(selected);
 		        					drawed.remove(selected);
 		        				}
-	        				}
-	        				else
-	        					numbers.remove(selected);
-	        				break;
+		    				}
+		    				else
+		    					numbers.remove(selected);
+		    				break;		
 	        	}
         		screenElements[i][n].getButton().setOnClickListener(this);
         		absLayout.addView(screenElements[i][n], new LayoutParams(squareSizeX,squareSizeY,posX,posY));
@@ -555,10 +619,12 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	}
 	public void playSound(int resource)
 	{
+		blockSound++;
 		if (mp != null)
 		{
 			mp.reset();
-			try {
+			try 
+			{
 				mp.setDataSource(resources.openRawResourceFd(resource).getFileDescriptor(),
 									resources.openRawResourceFd(resource).getStartOffset(),
 									resources.openRawResourceFd(resource).getLength());
@@ -578,20 +644,20 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 				e.printStackTrace();
 			}	
 		}
-		else
-		{
-			mp = MediaPlayer.create(this, resource);
-			try{
-				mp.start();
-			}
-			catch(Exception e){
-				System.out.println(e.getMessage());
-			}
-		}
+	}
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+	}
+	public void onDestroy()
+	{
+		setResult(1);
+		super.onDestroy();
 	}
 	Runnable dissapearSound = new Runnable() 
 	{  
-		public void run() {  
+		public void run() {
 			try {  
 				playSound(R.raw.button_ok);
 	        } 
@@ -603,7 +669,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	Runnable disappearAnimationEnded = new Runnable ()
 	{
 		public void run() {
-			runningAnimation--;
+			blockAnimation--;
 			if (checkCompletedLevel(level))
 				runFinalAnimation();
 		}
