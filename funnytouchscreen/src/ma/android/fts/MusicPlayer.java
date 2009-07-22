@@ -11,20 +11,22 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 
 public class MusicPlayer extends Service{
 
-	MediaPlayer mp;
-	ArrayList<Integer> musics = new ArrayList<Integer>();
-	Random random = new Random();
-	Resources resources;
-	int songNumber;
+	private MediaPlayer mp;
+	private ArrayList<Integer> musics = new ArrayList<Integer>();
+	private Resources resources;
+	private int songNumber;
+	private final IBinder mBinder = new MusicPlayerBinder();
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
-		return null;
+		return mBinder;
 	}
 	@Override
 	public void onCreate() 
@@ -90,14 +92,21 @@ public class MusicPlayer extends Service{
 			} 
 		}  
     }
+	public MediaPlayer getMediaPlayer()
+	{
+		return mp;
+	}
 	
 	@Override
 	public void onDestroy() 
 	{
-		  super.onDestroy();
-		  mp.stop();  
-		  mp.release();
-		  stopSelf();
+		super.onDestroy();
+		if (mp != null) 
+		{ 
+			  mp.stop();  
+			  mp.release();
+		}
+		stopSelf();
 	}
 	Runnable r = new Runnable() 
 	{  
@@ -110,4 +119,9 @@ public class MusicPlayer extends Service{
 	        }  
 		}
 	};  
+	public class MusicPlayerBinder extends Binder {
+        MusicPlayer getService() {
+            return MusicPlayer.this;
+        }
+    }
 }

@@ -14,14 +14,15 @@ import android.widget.LinearLayout;
 
 public class FunnyButton extends AbsoluteLayout{
 
-	public static final int BUTTON_ANIMATION_DURATION = 300;
+	public static final int BUTTON_DISSAPEARING_DURATION = 300;
+	public static final int BUTTON_BLINKING_DURATION = 600;
 
 	private ImageView[]dots;
 	private Button button;
 	private int serial;
 	private int dotNumber;
-	private AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingOutElement(1.0f,0.0f,BUTTON_ANIMATION_DURATION,0,0);
-	private AlphaAnimation blink = (AlphaAnimation) AnimationFactory.blinkingElement(1.0f, 0.0f, 300, Animation.INFINITE, Animation.REVERSE);
+	private AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingOutElement(1.0f,0.0f,BUTTON_DISSAPEARING_DURATION,0,0);
+	private AlphaAnimation blink = (AlphaAnimation) AnimationFactory.blinkingElement(1.0f, 0.3f, BUTTON_BLINKING_DURATION, Animation.INFINITE, Animation.REVERSE);
 
 
 	static int [] buttonBackground = new int [6];
@@ -43,7 +44,7 @@ public class FunnyButton extends AbsoluteLayout{
 		{new Point(28,28),new Point(28,-28), new Point(-28,-28), new Point(-28,28), new Point(0,0), null, null, null, null }, 
 		{new Point(28,28),new Point(28,-0), new Point(28,-28), new Point(-28,28), new Point(-28,0), new Point(-28,-28), null, null, null },
 		{new Point(28,28),new Point(28,-0), new Point(28,-28), new Point(-28,28), new Point(-28,0), new Point(-28,-28), new Point(0,0), null, null },
-		{new Point(28,28),new Point(28,8), new Point(28,-8), new Point(28,-28), new Point(-28,28), new Point(-28,8), new Point(-28,-8), new Point(-28,-28), null },
+		{new Point(28,28),new Point(28,0), new Point(28,-28), new Point(-28,28), new Point(-28,0), new Point(-28,-28), new Point(0,28), new Point(0,-28), null },
 		{new Point(28,28),new Point(28,0), new Point(28,-28), new Point(0,28), new Point(0,0), new Point(0,-28), new Point(-28,28), new Point(-28,0), new Point(-28,-28) },
 	};
 
