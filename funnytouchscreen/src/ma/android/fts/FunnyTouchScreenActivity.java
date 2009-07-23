@@ -1,6 +1,5 @@
 package ma.android.fts;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -115,26 +114,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
     {
         super.onCreate(savedInstanceState);  
         
-        resources = new Resources(this.getAssets(), new DisplayMetrics(), new
-				Configuration());
-        
-        Intent musicIntent = new Intent(this, MusicPlayerService.class);
-        conn = new ServiceConnection(){
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				// TODO Auto-generated method stub
-				musicPlayerService = ( (MusicPlayerService.MusicPlayerBinder ) service).getService( );
-				musicPlayerService.playMusic();
-			}
-
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				// TODO Auto-generated method stub
-				musicPlayerService = null;
-			}
-
-        	};
-        bindService(musicIntent,conn,Context.BIND_AUTO_CREATE);
+        resources = new Resources(this.getAssets(), new DisplayMetrics(), new Configuration());
         
         Intent iParameters = getIntent();
     
@@ -183,8 +163,6 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         
         mp = new MediaPlayer();
         mp.setOnCompletionListener(new OnCompletionListener(){
-
-			@Override
 			public void onCompletion(MediaPlayer mp) {
 				// TODO Auto-generated method stub
 				if (playingAplause && music)
@@ -696,6 +674,27 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 			}	
 		}
 	}
+
+	@Override
+	public void onStart()
+	{
+		if (musicPlayerService == null) {
+			conn = new ServiceConnection(){
+				public void onServiceConnected(ComponentName name, IBinder service) {
+					musicPlayerService = ( (MusicPlayerService.MusicPlayerBinder ) service).getService( );
+					musicPlayerService.playMusic();
+				}
+				public void onServiceDisconnected(ComponentName name) {
+					musicPlayerService = null;
+				}
+			};
+			bindService(new Intent(this, MusicPlayerService.class),conn,Context.BIND_AUTO_CREATE);
+		} else {
+			musicPlayerService.playMusic();
+		}
+		super.onStart();
+	}	
+	
 	@Override
 	public void onStop()
 	{
