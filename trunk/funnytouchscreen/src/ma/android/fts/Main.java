@@ -2,8 +2,12 @@ package ma.android.fts;
 
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.view.Display;
 import android.view.View;
@@ -39,7 +43,7 @@ public class Main extends Activity implements OnClickListener{
 	private FunnyButton[] settingElements;
 	private int squareSizeXMenu;
 	private int squareSizeYMenu;
-	
+	private MusicPlayerService musicPlayerService;
 	private int squareSizeXSettings;
 	private int squareSizeYSettings;
 	private Intent musicIntent;
@@ -150,46 +154,41 @@ public class Main extends Activity implements OnClickListener{
 										
 			case R.string.aboutButton:	break;
 			
-			case R.string.music:		musicIntent = new Intent(this, MusicPlayer.class);
+			case R.string.music:		
+										musicIntent = new Intent(this, MusicPlayerService.class);
 										if (musicEnabled){
 											stopService(musicIntent);
 											pressed.setBackgroundResource(R.drawable.music_off);
 											musicEnabled = false;
 											Toast.makeText(this, getText(R.string.musicOff), Toast.LENGTH_SHORT).show();
 										}
-										else{
+										else
+										{
 											startService(musicIntent);
 											pressed.setBackgroundResource(R.drawable.music_on);
 											musicEnabled = true;
 											Toast.makeText(this, getText(R.string.musicOn), Toast.LENGTH_SHORT).show();
 										}
+										ServiceConnection conn = new ServiceConnection(){
+											@Override
+											public void onServiceConnected(ComponentName name, IBinder service) {
+												// TODO Auto-generated method stub
+												musicPlayerService = ( (MusicPlayerService.MusicPlayerBinder ) service).getService( );
+											}
+
+											@Override
+											public void onServiceDisconnected(ComponentName name) {
+												// TODO Auto-generated method stub
+												musicPlayerService = null;
+											}
+								        };
+								        bindService(musicIntent,conn,Context.BIND_AUTO_CREATE);
 										break;
 		}
 	}
 	public void launchActivity(int game, int level)
 	{
 		ftsIntent = new Intent(this, FunnyTouchScreenActivity.class);
-		/*if (game == 1)
-		{
-			if (level == 0 || level == 1)
-			{
-				ftsIntent.putExtra("squareNumberX",2);
-				ftsIntent.putExtra("squareNumberY", 2);
-				ftsIntent.putExtra("repeats",0);
-			}
-			if (level == 2 || level == 3)
-			{
-				ftsIntent.putExtra("squareNumberX",2);
-				ftsIntent.putExtra("squareNumberY", 3);
-				ftsIntent.putExtra("repeats",0);
-			}
-		}
-		else
-		{
-			ftsIntent.putExtra("squareNumberX",3);
-			ftsIntent.putExtra("squareNumberY", 4);
-			ftsIntent.putExtra("repeats",0);
-		}*/
 		ftsIntent.putExtra("round",0);
 		ftsIntent.putExtra("level",level);
 		ftsIntent.putExtra("game", game);
@@ -228,8 +227,19 @@ public class Main extends Activity implements OnClickListener{
         }
 	}
 	@Override
+	public void onStart()
+	{
+		if (musicPlayerService != null)
+		{
+			musicPlayerService.playMusic();
+		}
+		super.onStart();
+	}
+
+	@Override
 	public void onStop()
 	{
+		musicPlayerService.stopMusic();
 		super.onStop();
 	}
 	@Override

@@ -22,7 +22,7 @@ public class FunnyButton extends AbsoluteLayout{
 	private int serial;
 	private int dotNumber;
 	private AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingOutElement(1.0f,0.0f,BUTTON_DISSAPEARING_DURATION,0,0);
-	private AlphaAnimation blink = (AlphaAnimation) AnimationFactory.blinkingElement(1.0f, 0.3f, BUTTON_BLINKING_DURATION, Animation.INFINITE, Animation.REVERSE);
+	private AlphaAnimation blink = (AlphaAnimation) AnimationFactory.blinkingElement(1.0f, 0.5f, BUTTON_BLINKING_DURATION, Animation.INFINITE, Animation.REVERSE);
 
 
 	static int [] buttonBackground = new int [6];

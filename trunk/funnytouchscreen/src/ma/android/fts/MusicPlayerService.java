@@ -3,7 +3,6 @@ package ma.android.fts;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import android.app.Service;
 import android.content.Intent;
@@ -15,13 +14,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 
-public class MusicPlayer extends Service{
+public class MusicPlayerService extends Service{
 
 	private MediaPlayer mp;
 	private ArrayList<Integer> musics = new ArrayList<Integer>();
 	private Resources resources;
 	private int songNumber;
 	private final IBinder mBinder = new MusicPlayerBinder();
+	private int playingMusic = 0;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -47,6 +47,7 @@ public class MusicPlayer extends Service{
 	{
 		try
 		{
+			playingMusic++;
 			mp = MediaPlayer.create(this, musics.get(songNumber));
 			mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
 				@Override
@@ -64,6 +65,7 @@ public class MusicPlayer extends Service{
 												resources.openRawResourceFd(musics.get(songNumber)).getLength());
 							mp.prepare();
 							mp.start();
+							
 						} catch (IllegalArgumentException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -92,9 +94,22 @@ public class MusicPlayer extends Service{
 			} 
 		}  
     }
-	public MediaPlayer getMediaPlayer()
+	public void playMusic()
 	{
-		return mp;
+		playingMusic++;
+		if (playingMusic == 1)
+			mp.start();
+			
+	}
+	public void stopMusic()
+	{
+		playingMusic--;
+		if (playingMusic == 0)
+			mp.stop();
+	}
+	public int getServiceState()
+	{
+		return playingMusic;
 	}
 	
 	@Override
@@ -120,8 +135,8 @@ public class MusicPlayer extends Service{
 		}
 	};  
 	public class MusicPlayerBinder extends Binder {
-        MusicPlayer getService() {
-            return MusicPlayer.this;
+		MusicPlayerService getService() {
+            return MusicPlayerService.this;
         }
     }
 }
