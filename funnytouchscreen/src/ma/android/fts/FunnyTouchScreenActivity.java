@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
@@ -34,7 +35,6 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	public static final int PADDING = 20;
 	public static final int MAX_SIZE = 3;
 	
-	
 	private int width;
     private int height;
     private int squareNumberX;
@@ -46,7 +46,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
     private int game;
     private int selectedButtonNumber;
     private MediaPlayer mp;
-    private MusicPlayer musicPlayer;
+    private MusicPlayerService musicPlayerService;
     private FunnyButton[][] screenElements;
 	private AbsoluteLayout absLayout;
 	private Resources resources;
@@ -57,15 +57,15 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	private int blockSound = 0;
 	private boolean playingAplause = false;
 	private ServiceConnection conn;
-	static Dimension [][] game1Dimension = new Dimension[4][];
-	static Dimension [][] game2Dimension = new Dimension[4][];
+	static Point [][] game1Dimension = new Point[4][];
+	static Point [][] game2Dimension = new Point[4][];
 	
-	static Dimension[] game1level1 = {new Dimension(1,2),new Dimension(1,2),new Dimension(2,2),new Dimension(2,2),new Dimension(2,3),new Dimension(2,3), null};
-	static Dimension[] game1level2 = {new Dimension(1,2),new Dimension(1,2),new Dimension(2,2),new Dimension(2,2),new Dimension(2,3),new Dimension(2,3), null}; 
-	static Dimension[] game1level3 = {new Dimension(2,2),new Dimension(2,2),new Dimension(2,3),new Dimension(2,3),new Dimension(3,3),new Dimension(3,3), null};
-	static Dimension[] game1level4 = {new Dimension(2,2),new Dimension(2,2),new Dimension(2,3),new Dimension(2,3),new Dimension(3,3),new Dimension(3,3), null};
+	static Point[] game1level1 = {new Point(1,2),new Point(1,2),new Point(2,2),new Point(2,2),new Point(2,3),new Point(2,3), null};
+	static Point[] game1level2 = {new Point(1,2),new Point(1,2),new Point(2,2),new Point(2,2),new Point(2,3),new Point(2,3), null}; 
+	static Point[] game1level3 = {new Point(2,2),new Point(2,2),new Point(2,3),new Point(2,3),new Point(3,3),new Point(3,3), null};
+	static Point[] game1level4 = {new Point(2,2),new Point(2,2),new Point(2,3),new Point(2,3),new Point(3,3),new Point(3,3), null};
 	
-	static Dimension[] game2Level1234 = {new Dimension (3,4), new Dimension (3,4), null};
+	static Point[] game2Level1234 = {new Point (3,4), new Point (3,4), null};
 	static int [] background = new int[27];
 	
 	static {
@@ -118,42 +118,44 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         resources = new Resources(this.getAssets(), new DisplayMetrics(), new
 				Configuration());
         
-        Intent musicIntent = new Intent(this, MusicPlayer.class);
+        Intent musicIntent = new Intent(this, MusicPlayerService.class);
         conn = new ServiceConnection(){
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				// TODO Auto-generated method stub
-				musicPlayer = ( (MusicPlayer.MusicPlayerBinder ) service).getService( );
+				musicPlayerService = ( (MusicPlayerService.MusicPlayerBinder ) service).getService( );
+				musicPlayerService.playMusic();
 			}
 
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
 				// TODO Auto-generated method stub
-				musicPlayer = null;
+				musicPlayerService = null;
 			}
 
         	};
         bindService(musicIntent,conn,Context.BIND_AUTO_CREATE);
+        
         Intent iParameters = getIntent();
     
         round = iParameters.getIntExtra("round",0);
         level = iParameters.getIntExtra("level", 0);
         game = iParameters.getIntExtra("game", 0);
         
-        Dimension dimension = new Dimension();
+        Point dimension;
         
         switch (game)
         {
-        	case 1: dimension = new Dimension();
+        	case 1: dimension = new Point();
         			dimension = game1Dimension[level][round];
-        			squareNumberX = dimension.getSquareNumberX();
-        			squareNumberY = dimension.getSquareNumberY();
+        			squareNumberX = dimension.x;
+        			squareNumberY = dimension.y;
         			break;
         	
-        	case 2: dimension = new Dimension();
+        	case 2: dimension = new Point();
 					dimension = game2Dimension[level][round];
-					squareNumberX = dimension.getSquareNumberX();
-					squareNumberY = dimension.getSquareNumberY();
+					squareNumberX = dimension.x;
+					squareNumberY = dimension.y;
 					break;
         			
         }
@@ -186,7 +188,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 			public void onCompletion(MediaPlayer mp) {
 				// TODO Auto-generated method stub
 				if (playingAplause && music)
-					musicPlayer.getMediaPlayer().start();
+					musicPlayerService.playMusic();
 				blockSound--;
 			}});
         drawButtons();
@@ -375,9 +377,9 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 					}
 					else 
 					{
-						if (musicPlayer.getMediaPlayer() != null && music)
+						if (music)
 						{
-							musicPlayer.getMediaPlayer().stop();
+							musicPlayerService.stopMusic();
 						}
 						playSound(R.raw.aplause);
 						playingAplause = true;
@@ -391,9 +393,9 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 					}
 					else 
 					{
-						if (musicPlayer.getMediaPlayer() != null && music)
+						if (music)
 						{
-							musicPlayer.getMediaPlayer().stop();
+							musicPlayerService.stopMusic();
 						}
 						playSound(R.raw.aplause);
 						playingAplause = true;
@@ -697,6 +699,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	@Override
 	public void onStop()
 	{
+		musicPlayerService.stopMusic();
 		super.onStop();
 	}
 	public void onDestroy()
