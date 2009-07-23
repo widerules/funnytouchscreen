@@ -1,8 +1,9 @@
 package ma.android.fts;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -11,7 +12,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.Resources.NotFoundException;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -33,6 +33,9 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
     
 	public static final int PADDING = 20;
 	public static final int MAX_SIZE = 3;
+	protected static final long NEXT_LEVEL_DELAY = 10 * 1000;
+	private static Timer timer = null;
+	private static int timerUsers = 0;
 	
 	private int width;
     private int height;
@@ -58,6 +61,8 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	private ServiceConnection conn;
 	static Point [][] game1Dimension = new Point[4][];
 	static Point [][] game2Dimension = new Point[4][];
+	private boolean waitingForEndTimer = false;
+	
 	
 	static Point[] game1level1 = {new Point(1,2),new Point(1,2),new Point(2,2),new Point(2,2),new Point(2,3),new Point(2,3), null};
 	static Point[] game1level2 = {new Point(1,2),new Point(1,2),new Point(2,2),new Point(2,2),new Point(2,3),new Point(2,3), null}; 
@@ -112,8 +117,11 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
-        super.onCreate(savedInstanceState);  
-        
+        super.onCreate(savedInstanceState); 
+        if (timer == null) {
+        	timer = new Timer();
+        }
+        timerUsers++;
         resources = new Resources(this.getAssets(), new DisplayMetrics(), new Configuration());
         
         Intent iParameters = getIntent();
@@ -145,7 +153,8 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         selectedButtonNumber = 1;
         
         absLayout = new AbsoluteLayout(this);
-        absLayout.setBackgroundResource(background[random.nextInt(27)]); 
+        absLayout.setBackgroundResource(background[random.nextInt(27)]);
+        absLayout.setOnClickListener(this);
         
         WindowManager w = getWindowManager();
         Display d = w.getDefaultDisplay();
@@ -180,11 +189,15 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         }
     }
     
-	public void onClick(View v) 
+	public void onClick(View clicked) 
 	{
-		if (blockAnimation == 0 && blockSound == 0)
-		{
-			Button pressed = (Button)v;
+		if (waitingForEndTimer) {
+			increaseLevel();
+			waitingForEndTimer = false;
+			return;
+		}
+		if (blockAnimation == 0 && blockSound == 0 && (clicked instanceof Button)) {
+			Button pressed = (Button)clicked;
 			
 			FunnyButton pressedParent = (FunnyButton) pressed.getParent();
 			if (game ==1)
@@ -331,18 +344,12 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	public void makeButtonDisappear(FunnyButton pressedParent)
 	{
 		blockAnimation++;
-		new Thread(dissapearSound).start();
+		playSound(R.raw.button_ok);
 		pressedParent.disappear(disappearAnimationEnded);
 	}
 	public void increaseLevel()
 	{
-		/*try {
-			Thread.sleep(15000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
+		if (isFinishing()) return;
 		finish();
 		Intent iParameters = getIntent();
 		iParameters.putExtra("firstRun", false);
@@ -388,21 +395,21 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		blinkingButton.setAnimation(null);
 		blinkingButton = null;
 	}
-	
 
 	public void runFinalAnimation()
 	{
 		FinalAnimation fa = AnimationFactory.generateAnimation(height, width,this);
 		fa.getAnimation().setAnimationListener(new Animation.AnimationListener(){
-
 			public void onAnimationEnd(Animation animation) {
-					// TODO Auto-generated method stub
-				increaseLevel();
+				waitingForEndTimer = true;
+				timer.schedule(new TimerTask() {
+					public void run() {
+						increaseLevel();
+					}
+				}, NEXT_LEVEL_DELAY);
 			}
-
 			public void onAnimationRepeat(Animation animation) {
 			}
-
 			public void onAnimationStart(Animation animation) {
 			}
 	     });
@@ -659,17 +666,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 									resources.openRawResourceFd(resource).getLength());
 				mp.prepare();
 				mp.start();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}	
 		}
@@ -705,18 +702,12 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	{
 		super.onDestroy();
 		unbindService(conn);
-	}
-	Runnable dissapearSound = new Runnable() 
-	{  
-		public void run() {
-			try {  
-				playSound(R.raw.button_ok);
-	        } 
-			catch (Exception e) {  
-	        	System.out.println(e.getMessage());
-	        }  
+		timerUsers--;
+		if (timerUsers <= 0) {
+			timer.cancel();
+			timer = null;
 		}
-	};
+	}
 	Runnable disappearAnimationEnded = new Runnable ()
 	{
 		public void run() {
