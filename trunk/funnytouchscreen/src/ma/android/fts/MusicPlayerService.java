@@ -1,31 +1,33 @@
 package ma.android.fts;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.Resources.NotFoundException;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.widget.Toast;
 
-public class MusicPlayerService extends Service{
+public class MusicPlayerService extends Service {
 
+	private static final String TAG = "MusicPlayer";
 	private MediaPlayer mp;
 	private ArrayList<Integer> musics = new ArrayList<Integer>();
 	private Resources resources;
-	private int songNumber;
+	private int currentSongNumber;
 	private final IBinder mBinder = new MusicPlayerBinder();
 	private int playingMusic = 0;
-	
+	private boolean enabled = false;
+
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return mBinder;
 	}
 	@Override
@@ -36,107 +38,98 @@ public class MusicPlayerService extends Service{
 		musics.add(R.raw.music2);
 		musics.add(R.raw.music3);
 		musics.add(R.raw.music4);
-		resources = new Resources(this.getAssets(), new DisplayMetrics(), new
-				Configuration());
+		resources = new Resources(this.getAssets(), new DisplayMetrics(), new Configuration());
 		Collections.shuffle(musics);
-		songNumber = 0;
+		currentSongNumber = 0;
 	}
-	
+
 	@Override
-    public void onStart(Intent intent, int startId) 
+	public void onStart(Intent intent, int startId) 
 	{
-		try
-		{
-			playingMusic++;
-			mp = MediaPlayer.create(this, musics.get(songNumber));
-			mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
-				@Override
-				public void onCompletion(MediaPlayer mp) 
-				{
-					// TODO Auto-generated method stub
-						songNumber++;
-						if (songNumber == musics.size()){
-							songNumber = 0;
-						}
-						mp.reset();
-						try {
-							mp.setDataSource(resources.openRawResourceFd(musics.get(songNumber)).getFileDescriptor(),
-												resources.openRawResourceFd(musics.get(songNumber)).getStartOffset(),
-												resources.openRawResourceFd(musics.get(songNumber)).getLength());
-							mp.prepare();
-							mp.start();
-							
-						} catch (IllegalArgumentException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IllegalStateException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (NotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}	
-						
-						
+		mp = MediaPlayer.create(this, musics.get(currentSongNumber));
+		mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
+			public void onCompletion(MediaPlayer mp) 
+			{
+				currentSongNumber++;
+				if (currentSongNumber == musics.size()){
+					currentSongNumber = 0;
 				}
-			});
-			new Thread(r).start();  
-		} 
-		catch (Exception e) 
-		{  
-			if (mp != null) 
-			{  
-				mp.stop();  
-			    mp.release();  
-			} 
-		}  
-    }
+				mp.reset();
+				try {
+					AssetFileDescriptor s = resources.openRawResourceFd(musics.get(currentSongNumber));
+					mp.setDataSource(s.getFileDescriptor(), s.getStartOffset(), s.getLength());
+					mp.prepare();
+					mp.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		updatePlayerState();
+	}
 	public void playMusic()
 	{
 		playingMusic++;
-		if (playingMusic == 1)
-			mp.start();
-			
+		updatePlayerState();
 	}
 	public void stopMusic()
 	{
 		playingMusic--;
-		if (playingMusic == 0)
-			mp.stop();
+		updatePlayerState();
 	}
 	public int getServiceState()
 	{
 		return playingMusic;
 	}
-	
+
 	@Override
 	public void onDestroy() 
 	{
 		super.onDestroy();
 		if (mp != null) 
 		{ 
-			  mp.stop();  
-			  mp.release();
+			mp.stop();  
+			mp.release();
 		}
 		stopSelf();
 	}
-	Runnable r = new Runnable() 
-	{  
-		public void run() {  
-			try {  
-				mp.start();
-	        } 
-			catch (Exception e) {  
-	        	System.out.println(e.getMessage());
-	        }  
-		}
-	};  
 	public class MusicPlayerBinder extends Binder {
 		MusicPlayerService getService() {
-            return MusicPlayerService.this;
-        }
-    }
+			return MusicPlayerService.this;
+		}
+	}
+	/**
+	 * @return the enabled
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+	/**
+	 * @param enabled the enabled to set
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		updatePlayerState();
+	}
+
+	/**
+	 * Starts and stops music player.
+	 */
+	private void updatePlayerState() {
+		if (mp != null) {
+			if (enabled && playingMusic > 0) {
+				if (!mp.isPlaying()) {
+					Log.i(TAG, "Starting music");
+					mp.start();
+					Toast.makeText(this, getText(R.string.musicOn), Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				if (mp.isPlaying()) {
+					Log.i(TAG, "Stopping music");
+					mp.stop();
+					Toast.makeText(this, getText(R.string.musicOff), Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
+	}
 }

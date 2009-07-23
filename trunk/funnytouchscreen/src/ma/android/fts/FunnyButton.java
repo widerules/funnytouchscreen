@@ -163,7 +163,6 @@ public class FunnyButton extends AbsoluteLayout{
 	public void disappear(final Runnable runnable) {
 		if (runnable != null) {
 			dissapear.setAnimationListener(new AnimationListener() {
-				@Override
 				public void onAnimationEnd(Animation animation) {
 					setVisibility(View.INVISIBLE);
 					runnable.run();
