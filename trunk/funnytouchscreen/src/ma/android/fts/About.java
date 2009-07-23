@@ -14,7 +14,6 @@ public class About extends Activity{
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about);
 	
@@ -23,11 +22,8 @@ public class About extends Activity{
 		
 		Button aboutButton = (Button) findViewById(R.id.aboutButton);
 		aboutButton.setOnClickListener(new OnClickListener(){
-
-			@Override
 			public void onClick(View v) {
 				finish();
-				
 			}});
 	}
 }
