@@ -26,7 +26,6 @@ import android.view.animation.Animation;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.SlidingDrawer;
 import android.widget.Toast;
 import android.widget.AbsoluteLayout.LayoutParams;
 
@@ -40,6 +39,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
     private int height;
     private int squareNumberX;
     private int squareNumberY;
+    private int round;
     private int squareSizeX;
     private int squareSizeY;
     private int level;
@@ -56,8 +56,16 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	private int blockAnimation = 0;
 	private int blockSound = 0;
 	private boolean playingAplause = false;
-	static int [] background = new int[27];
+	static Dimension [][] game1Dimension = new Dimension[4][];
+	static Dimension [][] game2Dimension = new Dimension[4][];
 	
+	static Dimension[] game1level1 = {new Dimension(1,2),new Dimension(1,2),new Dimension(2,2),new Dimension(2,2),new Dimension(2,3),new Dimension(2,3), null};
+	static Dimension[] game1level2 = {new Dimension(1,2),new Dimension(1,2),new Dimension(2,2),new Dimension(2,2),new Dimension(2,3),new Dimension(2,3), null}; 
+	static Dimension[] game1level3 = {new Dimension(2,2),new Dimension(2,2),new Dimension(2,3),new Dimension(2,3),new Dimension(3,3),new Dimension(3,3),new Dimension(3,4),new Dimension(3,4),null};
+	static Dimension[] game1level4 = {new Dimension(2,2),new Dimension(2,2),new Dimension(2,3),new Dimension(2,3),new Dimension(3,3),new Dimension(3,3),new Dimension(3,4),new Dimension(3,4),null};
+	
+	static Dimension[] game2Level1234 = {new Dimension (3,4), new Dimension (3,4), null};
+	static int [] background = new int[27];
 	
 	static {
 		background[0] = R.drawable.background1;
@@ -87,6 +95,17 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		background[24] = R.drawable.background25;
 		background[25] = R.drawable.background26;
 		background[26] = R.drawable.background27;
+
+		game1Dimension[0] = game1level1;
+		game1Dimension[1] = game1level2;
+		game1Dimension[2] = game1level3;
+		game1Dimension[3] = game1level4;
+		
+		game2Dimension[0] = game2Level1234;
+		game2Dimension[1] = game2Level1234;
+		game2Dimension[2] = game2Level1234;
+		game2Dimension[3] = game2Level1234;
+		
 	}
 	
 	/** Called when the activity is first created. */
@@ -115,10 +134,29 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
         	};
         bindService(musicIntent,conn,Context.BIND_AUTO_CREATE);
         Intent iParameters = getIntent();
-        squareNumberX = iParameters.getIntExtra("squareNumberX", 0);
-        squareNumberY = iParameters.getIntExtra("squareNumberY", 0);
+    
+        round = iParameters.getIntExtra("round",0);
         level = iParameters.getIntExtra("level", 0);
         game = iParameters.getIntExtra("game", 0);
+        
+        Dimension dimension = new Dimension();
+        
+        switch (game)
+        {
+        	case 1: dimension = new Dimension();
+        			dimension = game1Dimension[level][round];
+        			squareNumberX = dimension.getSquareNumberX();
+        			squareNumberY = dimension.getSquareNumberY();
+        			break;
+        	
+        	case 2: dimension = new Dimension();
+					dimension = game2Dimension[level][round];
+					squareNumberX = dimension.getSquareNumberX();
+					squareNumberY = dimension.getSquareNumberY();
+					break;
+        			
+        }
+        
         music = iParameters.getBooleanExtra("music", false);
         random = new Random();
         selectedButtonNumber = 1;
@@ -327,33 +365,40 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		finish();
 		Intent iParameters = getIntent();
 		iParameters.putExtra("firstRun", false);
-		if (squareNumberX != MAX_SIZE  ||
-			squareNumberX == MAX_SIZE && iParameters.getIntExtra("repeats", 0)<1)
-		{	
-			if (iParameters .getIntExtra("repeats", 0) == 0)
-			{
-				iParameters.putExtra("repeats",1);
-				startActivity(iParameters);
-			}
-			else
-			{
-				if (squareNumberX == squareNumberY)
-					iParameters.putExtra("squareNumberY", squareNumberY + 1);
-				else
-					iParameters.putExtra("squareNumberX", squareNumberX + 1);
-				iParameters.putExtra("repeats",0);
-				startActivity(iParameters);
-			}
-		}
-		else 
-		{
-			if (musicPlayer.getMediaPlayer() != null && music)
-			{
-				musicPlayer.getMediaPlayer().stop();
-			}
-			playSound(R.raw.aplause);
-			playingAplause = true;
-		}
+		switch (game)
+	    {
+			case 1: if (game1Dimension[level][round +1] != null)
+					{
+						iParameters.putExtra("round",round + 1);
+						startActivity(iParameters);
+					}
+					else 
+					{
+						if (musicPlayer.getMediaPlayer() != null && music)
+						{
+							musicPlayer.getMediaPlayer().stop();
+						}
+						playSound(R.raw.aplause);
+						playingAplause = true;
+					}
+					break;
+			
+			case 2: if (game2Dimension[level][round +1] != null)
+					{
+						iParameters.putExtra("round",round + 1);
+						startActivity(iParameters);
+					}
+					else 
+					{
+						if (musicPlayer.getMediaPlayer() != null && music)
+						{
+							musicPlayer.getMediaPlayer().stop();
+						}
+						playSound(R.raw.aplause);
+						playingAplause = true;
+					}
+					break;
+	    }
 	}
 	public void coupleDisapear(FunnyButton parent)
 	{
@@ -652,7 +697,6 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	}
 	public void onDestroy()
 	{
-		setResult(1);
 		super.onDestroy();
 	}
 	Runnable dissapearSound = new Runnable() 
@@ -674,5 +718,4 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 				runFinalAnimation();
 		}
 	};
-
 }

@@ -34,7 +34,6 @@ public class Main extends Activity implements OnClickListener{
 	private int width;
 	private int height;
 	private boolean musicEnabled;
-	private boolean gameLaunched;
 	private AbsoluteLayout absLayout;
 	private FunnyButton[][] menuElements;
 	private FunnyButton[] settingElements;
@@ -52,7 +51,6 @@ public class Main extends Activity implements OnClickListener{
         super.onCreate(savedInstanceState);
         
         musicEnabled = false;
-        gameLaunched = false;
         
         absLayout = new AbsoluteLayout(this);
         absLayout.setBackgroundResource(R.drawable.main_background); 
@@ -171,7 +169,7 @@ public class Main extends Activity implements OnClickListener{
 	public void launchActivity(int game, int level)
 	{
 		ftsIntent = new Intent(this, FunnyTouchScreenActivity.class);
-		if (game == 1)
+		/*if (game == 1)
 		{
 			if (level == 0 || level == 1)
 			{
@@ -191,20 +189,13 @@ public class Main extends Activity implements OnClickListener{
 			ftsIntent.putExtra("squareNumberX",3);
 			ftsIntent.putExtra("squareNumberY", 4);
 			ftsIntent.putExtra("repeats",0);
-		}
+		}*/
+		ftsIntent.putExtra("round",0);
 		ftsIntent.putExtra("level",level);
 		ftsIntent.putExtra("game", game);
 		ftsIntent.putExtra("firstRun", true);
 		ftsIntent.putExtra("music",musicEnabled);
-		startActivityForResult(ftsIntent,1);
-		gameLaunched = true;
-		
-	}
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) 
-	{
-		if (requestCode == resultCode)
-			gameLaunched = false;
-			
+		startActivity(ftsIntent);
 	}
 	public void drawButtons()
 	{	
