@@ -19,7 +19,7 @@
         <activity android:name=".FunnyTouchScreenActivity"
         		  android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
         		  android:screenOrientation="portrait" />
-        <service android:name=".MusicPlayer">
+        <service android:name=".MusicPlayerService">
 	    	<intent-filter>
 	        	<action android:name="android.intent.action.MUSICPLAYER"/> 
 	    	</intent-filter> 
