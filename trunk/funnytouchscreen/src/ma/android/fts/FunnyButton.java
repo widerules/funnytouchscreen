@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 
 public class FunnyButton extends AbsoluteLayout{
 
-	public static final int BUTTON_DISSAPEARING_DURATION = 300;
+	public static final int BUTTON_DISSAPEARING_DURATION = 400;
 	public static final int BUTTON_BLINKING_DURATION = 600;
 
 	private ImageView[]dots;
