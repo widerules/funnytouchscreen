@@ -145,7 +145,9 @@ public class Main extends Activity implements OnClickListener{
 			break;
 			case R.string.game2Level4: 	launchActivity(2,3);
 			break;
-			case R.string.aboutButton:	break;
+			case R.string.aboutButton:	Intent intent = new Intent (this,About.class);
+										startActivity(intent);
+										break;
 			case R.string.music:		musicPlayerService.setEnabled(!musicPlayerService.isEnabled()); drawCorrectMusicButton();
 			break;
 		}
