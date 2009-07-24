@@ -94,10 +94,9 @@ public class Main extends Activity implements OnClickListener{
 		settingElements[1].getButton().setId(R.string.airplaneMode);
 		settingElements[2].getButton().setId(R.string.music);
 
-		boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), 
-				Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+		boolean isEnabled = Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 1;
 
-		if (isEnabledAirplaneMode){
+		if (isEnabled){
 			settingElements[1].getButton().setBackgroundResource(R.drawable.airplane_on);	
 		}
 		else{
@@ -224,11 +223,10 @@ public class Main extends Activity implements OnClickListener{
 	
 	private void checkAirplaneMode()
 	{
-		boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+		boolean isEnabled = Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 1;
 		Button airplaneMode = (Button) findViewById(R.string.airplaneMode);
-		if (isEnabledAirplaneMode){
+		if (isEnabled){
 			Settings.System.putInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON,0);
-			
 			airplaneMode.setBackgroundResource(R.drawable.airplane_off);
 			Toast.makeText(this, getText(R.string.airplaneModeOff), Toast.LENGTH_SHORT).show();
 		}
@@ -237,6 +235,9 @@ public class Main extends Activity implements OnClickListener{
 			airplaneMode.setBackgroundResource(R.drawable.airplane_on);
 			Toast.makeText(this, getText(R.string.airplaneModeOn), Toast.LENGTH_SHORT).show();
 		}
+		Intent intent = new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+		intent.putExtra("state", !isEnabled);
+		sendBroadcast(intent);
 	}
 
 }
