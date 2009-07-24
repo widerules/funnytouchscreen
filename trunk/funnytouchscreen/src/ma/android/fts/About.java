@@ -1,6 +1,7 @@
 package ma.android.fts;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,6 +24,12 @@ public class About extends Activity{
 		Button aboutButton = (Button) findViewById(R.id.aboutButton);
 		aboutButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View v) {
+				Intent intent = getIntent();
+				if (intent.getBooleanExtra("firstRun", false))
+				{
+					Intent mainWindow = new Intent(getBaseContext(), Main.class);
+					startActivity(mainWindow);
+				}
 				finish();
 			}});
 	}

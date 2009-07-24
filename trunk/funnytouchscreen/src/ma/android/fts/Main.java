@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -34,6 +35,7 @@ public class Main extends Activity implements OnClickListener{
 	public static final int BOTTOMBUTTONS_PADDING_SIDE = 20;
 	public static final int BOTTOMBUTTONS_PADDING_BOTTOM = 12;
 	public static final int BOTTOMBUTTONS = 3;
+	
 
 	private int width;
 	private int height;
@@ -107,6 +109,7 @@ public class Main extends Activity implements OnClickListener{
 
 		this.setContentView(absLayout);
 		drawCorrectMusicButton();
+		
 	}
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -114,21 +117,6 @@ public class Main extends Activity implements OnClickListener{
 
 		switch (pressed.getId())
 		{
-			case R.string.airplaneMode:	boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 1;
-
-
-			if (isEnabledAirplaneMode){
-				Settings.System.putInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON,0);
-				pressed.setBackgroundResource(R.drawable.airplane_off);
-				Toast.makeText(this, getText(R.string.airplaneModeOff), Toast.LENGTH_SHORT).show();
-			}
-			else{
-				Settings.System.putInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON,1);
-				pressed.setBackgroundResource(R.drawable.airplane_on);
-				Toast.makeText(this, getText(R.string.airplaneModeOn), Toast.LENGTH_SHORT).show();
-			}
-			break;
-
 			case R.string.game1Level1: 	launchActivity(1,0);
 			break;
 			case R.string.game1Level2: 	launchActivity(1,1);
@@ -145,9 +133,11 @@ public class Main extends Activity implements OnClickListener{
 			break;
 			case R.string.game2Level4: 	launchActivity(2,3);
 			break;
-			case R.string.aboutButton:	Intent intent = new Intent (this,About.class);
-										startActivity(intent);
+			case R.string.aboutButton:	Intent aboutWindow = new Intent (this,About.class);
+										startActivity(aboutWindow);
 										break;
+			case R.string.airplaneMode:	checkAirplaneMode();
+			break;
 			case R.string.music:		musicPlayerService.setEnabled(!musicPlayerService.isEnabled()); drawCorrectMusicButton();
 			break;
 		}
@@ -230,6 +220,23 @@ public class Main extends Activity implements OnClickListener{
 		} else {
 			settingElements[2].getButton().setBackgroundResource(R.drawable.music_off);
 		}		
+	}
+	
+	private void checkAirplaneMode()
+	{
+		boolean isEnabledAirplaneMode = Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+		Button airplaneMode = (Button) findViewById(R.string.airplaneMode);
+		if (isEnabledAirplaneMode){
+			Settings.System.putInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON,0);
+			
+			airplaneMode.setBackgroundResource(R.drawable.airplane_off);
+			Toast.makeText(this, getText(R.string.airplaneModeOff), Toast.LENGTH_SHORT).show();
+		}
+		else{
+			Settings.System.putInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON,1);
+			airplaneMode.setBackgroundResource(R.drawable.airplane_on);
+			Toast.makeText(this, getText(R.string.airplaneModeOn), Toast.LENGTH_SHORT).show();
+		}
 	}
 
 }
