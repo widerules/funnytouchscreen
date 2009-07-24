@@ -444,7 +444,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		ArrayList<Integer> numbers = null;
 		ArrayList<Boolean> drawed = null;
 		int level34Background = random.nextInt(6);
-		int level1Game2ImagePosition = 0;
+		int level0Game2ImagePosition = 0;
 		int selected;
 		int dotNumber;
 		int backgroundNumber;
@@ -462,7 +462,9 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		boolean game1Dot = false;
 		if ((level == 2 || level == 3) || (level == 0 && game == 2)||(level == 1 && game == 2)){
 			numbers = new ArrayList<Integer>();
+			
 			if (game == 2){
+				level0Game2ImagePosition = random.nextInt(numbers.size());
 				drawed = new ArrayList<Boolean>();
 				for (int i = 0; i <(squareNumberX * squareNumberY)/2;i ++)
 				{
@@ -476,7 +478,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 					numbers.add(i+1);
 				}
 			}
-			level1Game2ImagePosition = random.nextInt(numbers.size());
+			
 		}
 
 		for (int i=0;i<squareNumberX;i++)
@@ -497,7 +499,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 					else if (game == 2)
 					{
 						backgroundNumber = random.nextInt(numbers.size()); 
-						if (level1Game2ImagePosition == numbers.get(backgroundNumber)-1)
+						if (level0Game2ImagePosition == numbers.get(backgroundNumber)-1)
 						{	
 							dotNumber = 1;
 							screenElements[i][n] = new FunnyButton(this,dotNumber,true,false);
