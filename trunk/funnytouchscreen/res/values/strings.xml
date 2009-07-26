@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Funny Touch Screen </string>	
+    <string name="app_name">Funny Touch Screen</string>	
     <string name="starButton">Start</string>
     <string name="exitButton">Exit</string>
     <string name="airplaneMode">Airplane Mode</string>
