@@ -20,7 +20,14 @@
     <string name="airplaneModeOff">Setting airplane mode OFF</string>
     <string name="musicOn">Turning music ON</string>
     <string name="musicOff">Turning music OFF</string>
-    <string name="startingGame">Starting game</string>
     <string name="atDifficulty">at difficulty level</string>
     <string name="aboutButton">OK, I agree</string>
+    <string name="gameHelp11">Hide all buttons and tell me - what's on the picture?</string>
+    <string name="gameHelp12">Hide these buttons. You can only click on the one with flower on it.</string>
+    <string name="gameHelp13">Hide these buttons in the right order. How far can you get?</string>
+    <string name="gameHelp14">Hide all buttons in the right order. Do you know all numbers?</string>
+    <string name="gameHelp21">Hide buttons with the flower. What is their color?</string>
+    <string name="gameHelp22">Do you know colors? Find buttons with same colors.</string>
+    <string name="gameHelp23">Hide pairs of buttons in the right order.</string>
+    <string name="gameHelp24">Hide pairs of buttons in the right order.</string>
 </resources>

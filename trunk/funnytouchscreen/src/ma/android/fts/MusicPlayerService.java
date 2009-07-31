@@ -34,10 +34,10 @@ public class MusicPlayerService extends Service {
 	public void onCreate() 
 	{
 		super.onCreate();
-		musics.add(R.raw.music1);
-		musics.add(R.raw.music2);
-		musics.add(R.raw.music3);
-		musics.add(R.raw.music4);
+		// MUSIC OFF: musics.add(R.raw.music1);
+		// MUSIC OFF: musics.add(R.raw.music2);
+		// MUSIC OFF: musics.add(R.raw.music3);
+		// MUSIC OFF: musics.add(R.raw.music4);
 		resources = new Resources(this.getAssets(), new DisplayMetrics(), new Configuration());
 		Collections.shuffle(musics);
 		currentSongNumber = 0;

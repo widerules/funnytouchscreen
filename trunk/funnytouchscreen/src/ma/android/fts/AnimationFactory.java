@@ -14,8 +14,17 @@ import android.widget.ImageView;
 
 public class AnimationFactory {
 	
-	final static long ANIMATION_DURATION = 3000;
-	static int[] animationImages = new int[3]; 
+	final static long ANIMATION_DURATION = 4000;
+	
+	private static final int ANIMATION_IMAGES = 15; 
+	
+	private static int[] animationImages = new int[ANIMATION_IMAGES];
+	static {
+		for (int a=0; a<ANIMATION_IMAGES; a++) {
+			animationImages[a] = R.drawable.animation1 + a;
+		}
+	}
+	
 	private static Random random = new Random();
 	
 
@@ -23,10 +32,8 @@ public class AnimationFactory {
 	{	
 		FinalAnimation fa= new FinalAnimation();
 		Point startPosition = new Point();
-		
 		ImageView animationImage = new ImageView(context);
-		
-		animationImage.setImageResource(R.drawable.animation);
+		animationImage.setImageResource(animationImages[random.nextInt(ANIMATION_IMAGES)]);
 		int imageWidth = animationImage.getDrawable().getMinimumWidth();
 		int imageHeight = animationImage.getDrawable().getMinimumHeight();
 		
@@ -41,10 +48,10 @@ public class AnimationFactory {
 		{
 			case 0: set.addAnimation(AnimationFactory.rotatingElement(0f, 360f,
 		            Animation.RELATIVE_TO_SELF, 0.5f,
-		            Animation.RELATIVE_TO_SELF, 0.5f,ANIMATION_DURATION/4,3,Animation.REVERSE));
+		            Animation.RELATIVE_TO_SELF, 0.5f,ANIMATION_DURATION/3,1,Animation.REVERSE));
 					break;
 			
-			case 1: set.addAnimation(AnimationFactory.fadingOutElement(1.0f, 0.0f, ANIMATION_DURATION/4, 3, Animation.REVERSE));
+			case 1: set.addAnimation(AnimationFactory.fadingOutElement(1.0f, 0.2f, ANIMATION_DURATION/3, 1, Animation.REVERSE));
 					break;	
 		}
 		

@@ -8,17 +8,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,6 +32,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	public static final int PADDING = 20;
 	public static final int MAX_SIZE = 3;
 	protected static final long NEXT_LEVEL_DELAY = 10 * 1000;
+	private static final int BG_COUNT = 37;
 	private static Timer timer = null;
 	private static int timerUsers = 0;
 
@@ -49,14 +47,14 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	private int game;
 	private int selectedButtonNumber;
 	private MediaPlayer mp;
-	private MusicPlayerService musicPlayerService;
+	// MUSIC OFF: private MusicPlayerService musicPlayerService;
 	private FunnyButton[][] screenElements;
 	private AbsoluteLayout absLayout;
 	private Resources resources;
 	private static Random random = new Random();
 	private FunnyButton blinkingButton;
 	private int blockAnimation = 0;
-	private ServiceConnection conn;
+	// MUSIC OFF: private ServiceConnection conn;
 	static Point[][] game1Dimension = new Point[4][];
 	static Point[][] game2Dimension = new Point[4][];
 	private boolean waitingForEndTimer = false;
@@ -69,47 +67,21 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	static Point[] game2Level12 = { new Point(2, 2), new Point(2, 2), new Point(2, 2), new Point(2, 3), new Point(2, 3), new Point(2, 4), new Point(2, 4) };
 	static Point[] game2Level34 = { new Point(2, 3), new Point(2, 3), new Point(2, 3), new Point(2, 4), new Point(2, 4), new Point(3, 4), new Point(3, 4) };
 
-	static int[] background = new int[27];
+	static int[] background = new int[BG_COUNT];
 
 	static {
-		background[0] = R.drawable.background1;
-		background[1] = R.drawable.background2;
-		background[2] = R.drawable.background3;
-		background[3] = R.drawable.background4;
-		background[4] = R.drawable.background5;
-		background[5] = R.drawable.background6;
-		background[6] = R.drawable.background7;
-		background[7] = R.drawable.background8;
-		background[8] = R.drawable.background9;
-		background[9] = R.drawable.background10;
-		background[10] = R.drawable.background11;
-		background[11] = R.drawable.background12;
-		background[12] = R.drawable.background13;
-		background[13] = R.drawable.background14;
-		background[14] = R.drawable.background15;
-		background[15] = R.drawable.background16;
-		background[16] = R.drawable.background17;
-		background[17] = R.drawable.background18;
-		background[18] = R.drawable.background19;
-		background[19] = R.drawable.background20;
-		background[20] = R.drawable.background21;
-		background[21] = R.drawable.background22;
-		background[22] = R.drawable.background23;
-		background[23] = R.drawable.background24;
-		background[24] = R.drawable.background25;
-		background[25] = R.drawable.background26;
-		background[26] = R.drawable.background27;
-
+		for (int a=0; a<BG_COUNT; a++) {
+			background[a] = R.drawable.background1 + a;
+		}
+		shuffleBackgrounds();
 		game1Dimension[0] = game1level1;
 		game1Dimension[1] = game1level2;
 		game1Dimension[2] = game1level3;
 		game1Dimension[3] = game1level4;
-
 		game2Dimension[0] = game2Level12;
 		game2Dimension[1] = game2Level12;
 		game2Dimension[2] = game2Level34;
-		game2Dimension[3] = game2Level34;
-
+		game2Dimension[3] = game2Level34;		
 	}
 
 	public static void shuffleBackgrounds() {
@@ -117,6 +89,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	}
 
 	/** Called when the activity is first created. */
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -133,19 +106,18 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		round = iParameters.getIntExtra("round", 0);
 		level = iParameters.getIntExtra("level", 0);
 		game = iParameters.getIntExtra("game", 0);
+		Log.i("FTS", "Game: "+game+", level: "+level+", round: "+round);
 
 		Point dimension;
 
 		switch (game) {
 			case 1:
-				dimension = new Point();
 				dimension = game1Dimension[level][round];
 				squareNumberX = dimension.x;
 				squareNumberY = dimension.y;
 				break;
 
 			case 2:
-				dimension = new Point();
 				dimension = game2Dimension[level][round];
 				squareNumberX = dimension.x;
 				squareNumberY = dimension.y;
@@ -157,7 +129,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		selectedButtonNumber = 1;
 
 		absLayout = new AbsoluteLayout(this);
-		absLayout.setBackgroundResource(background[random.nextInt(27)]);
+		absLayout.setBackgroundResource(background[random.nextInt(BG_COUNT)]);
 		absLayout.setOnClickListener(this);
 
 		WindowManager w = getWindowManager();
@@ -180,8 +152,24 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		this.setContentView(absLayout);
 		boolean firsRun = iParameters.getBooleanExtra("firstRun", false);
 		if (firsRun) {
-			Toast.makeText(this, getText(R.string.startingGame) + " " + game + " " + getText(R.string.atDifficulty) + " " + (level + 1), Toast.LENGTH_SHORT).show();
+			showLittleHelp(game, level);
 		}
+	}
+
+	private void showLittleHelp(int game, int level) {
+		int msg = 0;
+		switch (game*10+level) {
+			case 10: msg = R.string.gameHelp11; break;
+			case 11: msg = R.string.gameHelp12; break;
+			case 12: msg = R.string.gameHelp13; break;
+			case 13: msg = R.string.gameHelp14; break;
+			case 20: msg = R.string.gameHelp21; break;
+			case 21: msg = R.string.gameHelp22; break;
+			case 22: msg = R.string.gameHelp23; break;
+			case 23: msg = R.string.gameHelp24; break;
+		}
+
+		Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 	}
 
 	public void onClick(View clicked) {
@@ -333,6 +321,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		blinkingButton = null;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void runFinalAnimation() {
 		FinalAnimation fa = AnimationFactory.generateAnimation(height, width, this);
 		if (!hasMoreLevels()) {
@@ -410,6 +399,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		return finished;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void drawButtons() {
 		ArrayList<Integer> numbers = null;
 		ArrayList<Boolean> drawed = null;
@@ -584,6 +574,8 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 
 	@Override
 	public void onStart() {
+		// MUSIC OFF: 
+		/*
 		if (musicPlayerService == null) {
 			conn = new ServiceConnection() {
 				public void onServiceConnected(ComponentName name, IBinder service) {
@@ -599,18 +591,19 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		} else {
 			musicPlayerService.playMusic();
 		}
+		 */
 		super.onStart();
 	}
 
 	@Override
 	public void onStop() {
-		musicPlayerService.stopMusic();
+		// MUSIC OFF: musicPlayerService.stopMusic();
 		super.onStop();
 	}
 
 	public void onDestroy() {
 		super.onDestroy();
-		unbindService(conn);
+		// MUSIC OFF: unbindService(conn);
 		timerUsers--;
 		if (timerUsers <= 0) {
 			timer.cancel();
