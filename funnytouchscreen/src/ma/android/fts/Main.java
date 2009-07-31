@@ -2,13 +2,8 @@ package ma.android.fts;
 
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.Settings;
 import android.view.Display;
 import android.view.View;
@@ -18,7 +13,6 @@ import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.AbsoluteLayout.LayoutParams;
-
 
 public class Main extends Activity implements OnClickListener{
 
@@ -32,7 +26,8 @@ public class Main extends Activity implements OnClickListener{
 	public static final int MENU_ROWS = 4;
 
 	public static final int BOTTOMBUTTONS_PADDING_TOP = 416;
-	public static final int BOTTOMBUTTONS_PADDING_SIDE = 20;
+	// MUSIC OFF: public static final int BOTTOMBUTTONS_PADDING_SIDE = 20;
+	public static final int BOTTOMBUTTONS_PADDING_SIDE = 18;
 	public static final int BOTTOMBUTTONS_PADDING_BOTTOM = 12;
 	public static final int BOTTOMBUTTONS = 3;
 	
@@ -44,17 +39,17 @@ public class Main extends Activity implements OnClickListener{
 	private FunnyButton[] settingElements;
 	private int squareSizeXMenu;
 	private int squareSizeYMenu;
-	private MusicPlayerService musicPlayerService;
+	// MUSIC OFF: 	private MusicPlayerService musicPlayerService;
 	private int squareSizeXSettings;
 	private int squareSizeYSettings;
 	private Intent ftsIntent;
-	private ServiceConnection conn;
+	// MUSIC OFF: private ServiceConnection conn;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		startService(new Intent(this, MusicPlayerService.class));
+		// MUSIC OFF: startService(new Intent(this, MusicPlayerService.class));
 		absLayout = new AbsoluteLayout(this);
 		absLayout.setBackgroundResource(R.drawable.main_background);
 
@@ -92,7 +87,7 @@ public class Main extends Activity implements OnClickListener{
 
 		settingElements[0].getButton().setId(R.string.aboutButton);
 		settingElements[1].getButton().setId(R.string.airplaneMode);
-		settingElements[2].getButton().setId(R.string.music);
+		//settingElements[2].getButton().setId(R.string.music);
 
 		boolean isEnabled = Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 1;
 
@@ -104,7 +99,7 @@ public class Main extends Activity implements OnClickListener{
 		}
 
 		settingElements[0].getButton().setBackgroundResource(R.drawable.about);
-		settingElements[2].getButton().setBackgroundResource(R.drawable.music_off);
+		//settingElements[2].getButton().setBackgroundResource(R.drawable.music_off);
 
 		this.setContentView(absLayout);
 		drawCorrectMusicButton();
@@ -137,7 +132,7 @@ public class Main extends Activity implements OnClickListener{
 										break;
 			case R.string.airplaneMode:	checkAirplaneMode();
 			break;
-			case R.string.music:		musicPlayerService.setEnabled(!musicPlayerService.isEnabled()); drawCorrectMusicButton();
+			case R.string.music:		// MUSIC OFF: musicPlayerService.setEnabled(!musicPlayerService.isEnabled()); drawCorrectMusicButton();
 			break;
 		}
 	}
@@ -169,11 +164,11 @@ public class Main extends Activity implements OnClickListener{
 				absLayout.addView(menuElements[i][n], new LayoutParams(squareSizeXMenu,squareSizeYMenu,posX,posY));
 			}
 		}
-		for (int x=0;x<BOTTOMBUTTONS;x++)
+		for (int x=0;x<BOTTOMBUTTONS - 1;x++) // MUSIC OFF dela -1, MUSIC ON je bez -1
 		{
 			settingElements[x] = new FunnyButton(this,0,false,false);
 
-			int posXBottom = BOTTOMBUTTONS_PADDING_SIDE + 1 +  (squareSizeXSettings + PADDING)*x;
+			int posXBottom = BOTTOMBUTTONS_PADDING_SIDE + 1 + (squareSizeXSettings + PADDING)*(x+1); // MUSIC OFF: (x+1), ON: x
 			int posYBottom = BOTTOMBUTTONS_PADDING_TOP + 1;
 
 			settingElements[x].getButton().setOnClickListener(this);
@@ -183,6 +178,8 @@ public class Main extends Activity implements OnClickListener{
 	@Override
 	public void onStart()
 	{
+		// MUSIC OFF: 
+		/*
 		if (musicPlayerService == null) {
 			conn = new ServiceConnection(){
 				public void onServiceConnected(ComponentName name, IBinder service) {
@@ -198,27 +195,31 @@ public class Main extends Activity implements OnClickListener{
 		} else {
 			musicPlayerService.playMusic();
 		}
+		*/
 		super.onStart();
 	}
 
 	@Override
 	public void onStop() {
-		musicPlayerService.stopMusic();
+		// MUSIC OFF: musicPlayerService.stopMusic();
 		super.onStop();
 	}
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		unbindService(conn);
+		// MUSIC OFF: unbindService(conn);
 		stopService(new Intent(this, MusicPlayerService.class));
 	}
 
 	private void drawCorrectMusicButton() {
+		// MUSIC OFF: 
+		/*
 		if (musicPlayerService != null && musicPlayerService.isEnabled()){
 			settingElements[2].getButton().setBackgroundResource(R.drawable.music_on);
 		} else {
 			settingElements[2].getButton().setBackgroundResource(R.drawable.music_off);
-		}		
+		}	
+		*/	
 	}
 	
 	private void checkAirplaneMode()
