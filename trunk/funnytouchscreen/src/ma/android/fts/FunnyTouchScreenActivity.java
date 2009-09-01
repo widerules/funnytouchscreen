@@ -1,19 +1,27 @@
 package ma.android.fts;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -28,11 +36,12 @@ import android.widget.Toast;
 import android.widget.AbsoluteLayout.LayoutParams;
 
 public class FunnyTouchScreenActivity extends Activity implements OnClickListener {
+	
+	public static final File MULTIMEDIA = new File("/sdcard/funny-touch-screen");
 
 	public static final int PADDING = 20;
 	public static final int MAX_SIZE = 3;
 	protected static final long NEXT_LEVEL_DELAY = 10 * 1000;
-	private static final int BG_COUNT = 37;
 	private static Timer timer = null;
 	private static int timerUsers = 0;
 
@@ -47,14 +56,14 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	private int game;
 	private int selectedButtonNumber;
 	private MediaPlayer mp;
-	// MUSIC OFF: private MusicPlayerService musicPlayerService;
+	private MusicPlayerService musicPlayerService;
 	private FunnyButton[][] screenElements;
 	private AbsoluteLayout absLayout;
 	private Resources resources;
 	private static Random random = new Random();
 	private FunnyButton blinkingButton;
 	private int blockAnimation = 0;
-	// MUSIC OFF: private ServiceConnection conn;
+	private ServiceConnection conn;
 	static Point[][] game1Dimension = new Point[4][];
 	static Point[][] game2Dimension = new Point[4][];
 	private boolean waitingForEndTimer = false;
@@ -67,13 +76,11 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	static Point[] game2Level12 = { new Point(2, 2), new Point(2, 2), new Point(2, 2), new Point(2, 3), new Point(2, 3), new Point(2, 4), new Point(2, 4) };
 	static Point[] game2Level34 = { new Point(2, 3), new Point(2, 3), new Point(2, 3), new Point(2, 4), new Point(2, 4), new Point(3, 4), new Point(3, 4) };
 
-	static int[] background = new int[BG_COUNT];
+	private static List<File> backgrounds = null;
+	
+	private static int backgroundCount = 0;
 
 	static {
-		for (int a=0; a<BG_COUNT; a++) {
-			background[a] = R.drawable.background1 + a;
-		}
-		shuffleBackgrounds();
 		game1Dimension[0] = game1level1;
 		game1Dimension[1] = game1level2;
 		game1Dimension[2] = game1level3;
@@ -81,11 +88,23 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		game2Dimension[0] = game2Level12;
 		game2Dimension[1] = game2Level12;
 		game2Dimension[2] = game2Level34;
-		game2Dimension[3] = game2Level34;		
+		game2Dimension[3] = game2Level34;
 	}
 
-	public static void shuffleBackgrounds() {
-		Collections.shuffle(Arrays.asList(background));
+	public boolean initBackgrounds() {
+		backgrounds = new ArrayList<File>();
+		File[] files = MULTIMEDIA.listFiles();
+		if (files == null || files.length == 0) {
+			Toast.makeText(this, R.string.missingMultimedia, Toast.LENGTH_LONG).show();
+			return false;
+		}
+		for (File file : files) {
+			if (file.getAbsolutePath().endsWith(".jpg")) {
+				backgrounds.add(file);
+			}
+		}
+		Collections.shuffle(backgrounds);
+		return true;
 	}
 
 	/** Called when the activity is first created. */
@@ -93,7 +112,12 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		shuffleBackgrounds();
+		if (backgrounds == null) {
+			if (!initBackgrounds()) {
+				finish();
+				return;
+			}
+		}
 		FunnyButton.shuffleBackgrounds();
 		if (timer == null) {
 			timer = new Timer();
@@ -129,7 +153,12 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		selectedButtonNumber = 1;
 
 		absLayout = new AbsoluteLayout(this);
-		absLayout.setBackgroundResource(background[random.nextInt(BG_COUNT)]);
+		Bitmap b = BitmapFactory.decodeFile(backgrounds.get(backgroundCount).getAbsolutePath());
+		backgroundCount++;
+		if (backgroundCount >= backgrounds.size()) {
+			initBackgrounds();
+		}
+		absLayout.setBackgroundDrawable(new BitmapDrawable(b));
 		absLayout.setOnClickListener(this);
 
 		WindowManager w = getWindowManager();
@@ -574,8 +603,6 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 
 	@Override
 	public void onStart() {
-		// MUSIC OFF: 
-		/*
 		if (musicPlayerService == null) {
 			conn = new ServiceConnection() {
 				public void onServiceConnected(ComponentName name, IBinder service) {
@@ -591,19 +618,18 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		} else {
 			musicPlayerService.playMusic();
 		}
-		 */
 		super.onStart();
 	}
 
 	@Override
 	public void onStop() {
-		// MUSIC OFF: musicPlayerService.stopMusic();
+		musicPlayerService.stopMusic();
 		super.onStop();
 	}
 
 	public void onDestroy() {
 		super.onDestroy();
-		// MUSIC OFF: unbindService(conn);
+		unbindService(conn);
 		timerUsers--;
 		if (timerUsers <= 0) {
 			timer.cancel();
