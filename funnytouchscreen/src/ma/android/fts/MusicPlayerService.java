@@ -1,14 +1,16 @@
 package ma.android.fts;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
@@ -19,7 +21,7 @@ public class MusicPlayerService extends Service {
 
 	private static final String TAG = "MusicPlayer";
 	private MediaPlayer mp;
-	private ArrayList<Integer> musics = new ArrayList<Integer>();
+	private List<File> musics = null;
 	private Resources resources;
 	private int currentSongNumber;
 	private final IBinder mBinder = new MusicPlayerBinder();
@@ -34,19 +36,37 @@ public class MusicPlayerService extends Service {
 	public void onCreate() 
 	{
 		super.onCreate();
-		// MUSIC OFF: musics.add(R.raw.music1);
-		// MUSIC OFF: musics.add(R.raw.music2);
-		// MUSIC OFF: musics.add(R.raw.music3);
-		// MUSIC OFF: musics.add(R.raw.music4);
+		initMusic();
 		resources = new Resources(this.getAssets(), new DisplayMetrics(), new Configuration());
 		Collections.shuffle(musics);
 		currentSongNumber = 0;
 	}
 
+	private boolean initMusic() {
+		musics = new ArrayList<File>();
+		File[] files = FunnyTouchScreenActivity.MULTIMEDIA.listFiles();
+		if (files == null || files.length == 0) {
+			Toast.makeText(this, R.string.missingMultimedia, Toast.LENGTH_LONG).show();
+			stopSelf();
+			return false;
+		}
+		for (File file : files) {
+			if (file.getAbsolutePath().endsWith(".mp3")) {
+				musics.add(file);
+			}
+		}
+		Collections.shuffle(musics);
+		return true;
+	}
+
 	@Override
 	public void onStart(Intent intent, int startId) 
 	{
-		mp = MediaPlayer.create(this, musics.get(currentSongNumber));
+		if (!initMusic()) {
+			stopSelf();
+			return;
+		}
+		mp = MediaPlayer.create(this, Uri.fromFile(musics.get(currentSongNumber)));
 		mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
 			public void onCompletion(MediaPlayer mp) 
 			{
@@ -56,8 +76,7 @@ public class MusicPlayerService extends Service {
 				}
 				mp.reset();
 				try {
-					AssetFileDescriptor s = resources.openRawResourceFd(musics.get(currentSongNumber));
-					mp.setDataSource(s.getFileDescriptor(), s.getStartOffset(), s.getLength());
+					mp.setDataSource(MusicPlayerService.this, Uri.fromFile(musics.get(currentSongNumber)));
 					mp.prepare();
 					mp.start();
 				} catch (Exception e) {
