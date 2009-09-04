@@ -157,6 +157,7 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		backgroundCount++;
 		if (backgroundCount >= backgrounds.size()) {
 			initBackgrounds();
+			backgroundCount = 0;
 		}
 		absLayout.setBackgroundDrawable(new BitmapDrawable(b));
 		absLayout.setOnClickListener(this);
@@ -629,6 +630,11 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 
 	public void onDestroy() {
 		super.onDestroy();
+		BitmapDrawable bd = ((BitmapDrawable)absLayout.getBackground());
+		if (bd != null) {
+			absLayout.setBackgroundDrawable(null);
+			bd.getBitmap().recycle();
+		}
 		unbindService(conn);
 		timerUsers--;
 		if (timerUsers <= 0) {

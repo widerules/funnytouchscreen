@@ -25,8 +25,8 @@ public class About extends Activity{
 				Intent intent = getIntent();
 				if (intent.getBooleanExtra("firstRun", false))
 				{
-					Intent mainWindow = new Intent(getBaseContext(), Main.class);
-					startActivity(mainWindow);
+					Intent launcher = new Intent(getBaseContext(), Launcher.class);
+					startActivity(launcher);
 				}
 				finish();
 			}});
