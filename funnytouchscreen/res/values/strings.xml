@@ -30,5 +30,22 @@
     <string name="gameHelp22">Do you know colors? Find buttons with same colors.</string>
     <string name="gameHelp23">Hide pairs of buttons in the right order.</string>
     <string name="gameHelp24">Hide pairs of buttons in the right order.</string>
+    
     <string name="missingMultimedia">Multimedia files are missing, restart the game please.</string>
+    
+    
+    <string name="downloadTitle">Downloading</string>
+    <string name="downloadChecking">Checking multimedia repository for new files.</string>
+    <string name="downloadFoundFiles">Found {0} files, total size to download is {1} kB. Files will be saved on your SD card.</string>
+    <string name="downloadDownload">ok, download</string>
+    <string name="downloadCancel">no, later</string>
+    <string name="downloadOkSomeFilesAreThere">Ok, just download new multimedia files later.</string>
+    <string name="downloadMustDownload">Sorry, you cannot play this game without multimedia files.</string>
+    <string name="downloadDownloadingFiles">Downloading {0} files, total size to download is {1} kB.</string>
+    <string name="downloadFinished">Download finished successfully.</string>
+    <string name="downloadError">Download error, please restart game later</string>
+    <string name="downloadErrorConnect">Cannot connect to repository, please try again later</string>
+    <string name="downloadErrorWrite">Cannot write files, please check your SD card</string>
+    <string name="downloadNothingNew">No new multimedia files.</string>
+    
 </resources>
