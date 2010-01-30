@@ -1,6 +1,5 @@
 package ma.android.fts;
 
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,6 +9,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.view.Display;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
@@ -29,10 +31,12 @@ public class Main extends Activity implements OnClickListener{
 	public static final int MENU_COLS = 2;
 	public static final int MENU_ROWS = 4;
 
-	public static final int BOTTOMBUTTONS_PADDING_TOP = 416;
+	public static int BOTTOMBUTTONS_PADDING_TOP = -1;
+	public static final int BOTTOMBUTTONS_PADDING_TOP_FROM_DOWN = 64;
 	public static final int BOTTOMBUTTONS_PADDING_SIDE = 20;
 	public static final int BOTTOMBUTTONS_PADDING_BOTTOM = 12;
 	public static final int BOTTOMBUTTONS = 3;
+	private static final int EXIT = 123456789;
 	
 	private int width;
 	private int height;
@@ -73,6 +77,7 @@ public class Main extends Activity implements OnClickListener{
 		int bottomLeftWidth = width - BOTTOMBUTTONS_PADDING_SIDE * 2 - PADDING *2;
 		squareSizeXSettings = bottomLeftWidth / 3;
 
+		BOTTOMBUTTONS_PADDING_TOP = height - BOTTOMBUTTONS_PADDING_TOP_FROM_DOWN;
 		int bottomLeftHeight = height - BOTTOMBUTTONS_PADDING_TOP - BOTTOMBUTTONS_PADDING_BOTTOM;
 		squareSizeYSettings = bottomLeftHeight;
 
@@ -107,6 +112,30 @@ public class Main extends Activity implements OnClickListener{
 		drawCorrectMusicButton();
 		
 	}
+	
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, EXIT, 0, R.string.exit);
+		return true;
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case EXIT: finish();
+		}
+		return true;
+	}
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode != KeyEvent.KEYCODE_MENU) return true;
+		return false;
+	}
+	
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode != KeyEvent.KEYCODE_MENU) return true;
+		return false;
+	}
+	
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		Button pressed = (Button)v;

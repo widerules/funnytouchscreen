@@ -10,12 +10,14 @@ import ma.android.util.DownloaderCallback;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -39,11 +41,18 @@ public class Launcher extends Activity implements OnCancelListener {
 		super.onCreate(savedInstanceState);
 		handler = new Handler();
 	}
-	
+
 	public void onResume() {
 		Log.i(TAG, "Starting Launcher");
 		super.onResume();
 		checkStatus();
+	}
+
+	public void onDestroy() {
+		super.onDestroy();
+		if (wl != null && wl.isHeld()) {
+			wl.release();
+		}
 	}
 
 	private void checkStatus() {
@@ -62,6 +71,7 @@ public class Launcher extends Activity implements OnCancelListener {
 			finish();
 
 		} else if (shouldCheckDownload()) {
+			if (downloadingDialog != null) return;
 			Log.i(TAG, "Should download multimedia");
 			downloadPhase1();
 
@@ -91,7 +101,12 @@ public class Launcher extends Activity implements OnCancelListener {
 		checkingDialog.setOnCancelListener(this);
 	}
 
+	private PowerManager.WakeLock wl = null;
+
 	private void downloadPhase2() {
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
+		wl.acquire();
 		downloader.startDownloader();
 	}
 
@@ -135,7 +150,7 @@ public class Launcher extends Activity implements OnCancelListener {
 						Toast.makeText(Launcher.this, R.string.downloadNothingNew, Toast.LENGTH_LONG).show();
 						markDownloadChecked();
 						checkStatus();
-						
+
 					} else {
 						AlertDialog ask = new AlertDialog.Builder(Launcher.this)
 						.setTitle(R.string.downloadTitle)
@@ -170,21 +185,36 @@ public class Launcher extends Activity implements OnCancelListener {
 		public void downloadError(DownloadError arg0, String arg1) {
 			Log.i(TAG, "Error: " + arg0);
 			wasError = true;
-			String toast = null;
+			String errorMessage = null;
 			switch(arg0) {
-				case CANNOT_CONNECT: toast = getText(R.string.downloadErrorConnect).toString(); break;
-				case CANNOT_WRITE: toast = getText(R.string.downloadErrorWrite).toString(); break;
-				case CONNECTION_CRASHED: toast = getText(R.string.downloadErrorConnect).toString(); break;
-				case INVALID_REPOSITORY: toast = getText(R.string.downloadErrorConnect).toString(); break;
-				case MISSING_FILE: toast = getText(R.string.downloadErrorConnect).toString(); break;
-				case NO_SDCARD: toast = getText(R.string.downloadErrorWrite).toString(); break;
-				default: toast = getText(R.string.downloadError).toString(); break;
+				case CANNOT_CONNECT: errorMessage = getText(R.string.downloadErrorConnect).toString(); break;
+				case CANNOT_WRITE: errorMessage = getText(R.string.downloadErrorWrite).toString(); break;
+				case CONNECTION_CRASHED: errorMessage = getText(R.string.downloadErrorConnect).toString(); break;
+				case INVALID_REPOSITORY: errorMessage = getText(R.string.downloadErrorConnect).toString(); break;
+				case MISSING_FILE: errorMessage = getText(R.string.downloadErrorConnect).toString(); break;
+				case NO_SDCARD: errorMessage = getText(R.string.downloadErrorWrite).toString(); break;
+				default: errorMessage = getText(R.string.downloadError).toString(); break;
 			}
-			if (arg1 != null) toast += ": "+arg1;
-			final String finToast = toast;
+			//if (arg1 != null) errorMessage += ": "+arg1;
+			final String finToast = errorMessage;
 			handler.post(new Runnable() {
 				public void run() {
-					Toast.makeText(Launcher.this, finToast, Toast.LENGTH_LONG).show();
+					new AlertDialog.Builder(Launcher.this).setTitle(R.string.downloadErrorTitle).setMessage(finToast).setNeutralButton("ok", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							if (hasMultimediaFiles()) {
+								startGame();
+							}
+							finish();
+						}
+					}
+					).setOnCancelListener(new OnCancelListener() {
+						public void onCancel(DialogInterface dialog) {
+							if (hasMultimediaFiles()) {
+								startGame();
+							}
+							finish();
+						}
+					}).create().show();
 				}
 			});
 		}
@@ -193,13 +223,18 @@ public class Launcher extends Activity implements OnCancelListener {
 			Log.i(TAG, "... finish");
 			handler.post(new Runnable() {
 				public void run() {
-					downloadingDialog.dismiss();
+					if (downloadingDialog != null) {
+						downloadingDialog.dismiss();
+					}
+					if (checkingDialog != null) {
+						checkingDialog.dismiss();
+					}
 					if (!wasError) {
 						Toast.makeText(Launcher.this, R.string.downloadFinished, Toast.LENGTH_LONG).show();
 						markDownloadChecked();
 						startGame();
+						finish();
 					}
-					finish();
 				}
 			});
 		}
