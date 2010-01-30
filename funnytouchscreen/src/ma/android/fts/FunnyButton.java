@@ -80,12 +80,13 @@ public class FunnyButton extends AbsoluteLayout{
 			{
 				if (DOTS[dotNumber-1][x]!= null){
 					dots[x]= new ImageView(getContext());
-					if (image)
+					if (image) {
 						dots[x].setImageResource(R.drawable.marker);
-					else if (dotSize)
+					} else if (dotSize) {
 						dots[x].setImageResource(R.drawable.dotbig);
-					else if (!dotSize)
+					} else if (!dotSize) {
 						dots[x].setImageResource(R.drawable.dot);
+					}
 					addView(dots[x]);
 				}
 				else{

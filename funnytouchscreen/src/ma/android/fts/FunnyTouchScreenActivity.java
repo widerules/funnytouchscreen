@@ -25,6 +25,9 @@ import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
@@ -42,6 +45,9 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 	public static final int PADDING = 20;
 	public static final int MAX_SIZE = 3;
 	protected static final long NEXT_LEVEL_DELAY = 10 * 1000;
+
+	private static final int EXIT = 12345678;
+	
 	private static Timer timer = null;
 	private static int timerUsers = 0;
 
@@ -106,7 +112,29 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		Collections.shuffle(backgrounds);
 		return true;
 	}
+	
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, EXIT, 0, R.string.back);
+		return true;
+	}
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case EXIT: finish();
+		}
+		return true;
+	}
 
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode != KeyEvent.KEYCODE_MENU) return true;
+		return false;
+	}
+	
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode != KeyEvent.KEYCODE_MENU) return true;
+		return false;
+	}
+	
 	/** Called when the activity is first created. */
 	@SuppressWarnings("deprecation")
 	@Override
