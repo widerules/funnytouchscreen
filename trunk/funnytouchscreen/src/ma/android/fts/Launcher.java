@@ -18,6 +18,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class Launcher extends Activity implements OnCancelListener {
 		Log.i(TAG, "Creating");
 		super.onCreate(savedInstanceState);
 		handler = new Handler();
+		increaseStartCounter();
 	}
 
 	public void onResume() {
@@ -163,7 +165,6 @@ public class Launcher extends Activity implements OnCancelListener {
 							public void onClick(DialogInterface dialog, int whichButton) {
 								if (hasMultimediaFiles()) {
 									Toast.makeText(Launcher.this, R.string.downloadOkSomeFilesAreThere, Toast.LENGTH_LONG).show();
-									markDownloadChecked();
 									startGame();
 								} else {
 									Toast.makeText(Launcher.this, R.string.downloadMustDownload, Toast.LENGTH_LONG).show();
@@ -245,7 +246,7 @@ public class Launcher extends Activity implements OnCancelListener {
 			editor.putLong("multimediaDownloaded", System.currentTimeMillis());
 			editor.commit();
 		}
-
+		
 		public void downloadStarted(final int files, final long total) {
 			Log.i(TAG, "Starting download, " + files + " files, " + total + " B size ...");
 			handler.post(new Runnable() {
@@ -272,6 +273,13 @@ public class Launcher extends Activity implements OnCancelListener {
 			});
 		}
 
+	}
+
+	private void increaseStartCounter() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putLong("startCounter", preferences.getLong("startCounter", 0)+1);
+		editor.commit();
 	}
 
 	@Override

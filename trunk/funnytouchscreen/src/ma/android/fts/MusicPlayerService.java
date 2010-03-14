@@ -36,9 +36,7 @@ public class MusicPlayerService extends Service {
 	public void onCreate() 
 	{
 		super.onCreate();
-		initMusic();
 		resources = new Resources(this.getAssets(), new DisplayMetrics(), new Configuration());
-		Collections.shuffle(musics);
 		currentSongNumber = 0;
 	}
 
@@ -54,6 +52,11 @@ public class MusicPlayerService extends Service {
 			if (file.getAbsolutePath().endsWith(".mp3")) {
 				musics.add(file);
 			}
+		}
+		if (musics == null || musics.size() == 0) {
+			Toast.makeText(this, R.string.missingMusic, Toast.LENGTH_LONG).show();
+			stopSelf();
+			return false;
 		}
 		Collections.shuffle(musics);
 		return true;

@@ -2,6 +2,7 @@ package ma.android.fts;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Random;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -26,7 +27,7 @@ public class FunnyButton extends AbsoluteLayout{
 	private int dotNumber;
 	private AlphaAnimation dissapear = (AlphaAnimation) AnimationFactory.fadingOutElement(1.0f,0.0f,BUTTON_DISSAPEARING_DURATION,0,0);
 	private AlphaAnimation blink = (AlphaAnimation) AnimationFactory.blinkingElement(1.0f, 0.5f, BUTTON_BLINKING_DURATION, Animation.INFINITE, Animation.REVERSE);
-
+	private static Random random = new Random();
 
 	static Integer [] buttonBackground = new Integer[6];
 
@@ -63,8 +64,9 @@ public class FunnyButton extends AbsoluteLayout{
 		button.setGravity(Gravity.CENTER);
 		button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
 		addView(button);
-		
+		setAnimation(AnimationFactory.fadingOutElement(0, 1, 300+random.nextInt(1000), 0, 0));
 		initDots(image,dotSize);
+		getAnimation().startNow();
 	}
 
 	private void initDots(boolean image, boolean dotSize) {

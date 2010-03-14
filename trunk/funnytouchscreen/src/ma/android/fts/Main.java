@@ -5,8 +5,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -15,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.Toast;
@@ -37,6 +42,8 @@ public class Main extends Activity implements OnClickListener{
 	public static final int BOTTOMBUTTONS_PADDING_BOTTOM = 12;
 	public static final int BOTTOMBUTTONS = 3;
 	private static final int EXIT = 123456789;
+	private static final int RATE = 3456789;
+	private static final int SPREAD = 4567;
 	
 	private int width;
 	private int height;
@@ -110,36 +117,55 @@ public class Main extends Activity implements OnClickListener{
 
 		this.setContentView(absLayout);
 		drawCorrectMusicButton();
-		
+
 	}
-	
+
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, EXIT, 0, R.string.exit);
-		return true;
-	}
-	
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case EXIT: finish();
+		if (friendlyUser()) {
+			menu.add(0, RATE, 0, R.string.rate);
+			menu.add(0, SPREAD, 0, R.string.spread);
 		}
 		return true;
 	}
-	
+
+	private boolean friendlyUser() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		return preferences.getLong("startCounter", 0) > 3;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case EXIT: finish(); break;
+			case RATE:
+				Intent searchMarket = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pname:ma.android.fts"));
+				startActivity(searchMarket);
+				break;
+			case SPREAD:
+				Intent sendIntent = new Intent(Intent.ACTION_VIEW); 
+				sendIntent.putExtra("sms_body", getText(R.string.mail_text)); 
+				sendIntent.setType("vnd.android-dir/mms-sms"); 
+				// 	market://search?q=pname:ma.android.fts
+				startActivity(Intent.createChooser(sendIntent, getText(R.string.mail_title)));
+				break;
+		}
+		return true;
+	}
+
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode != KeyEvent.KEYCODE_MENU) return true;
 		return false;
 	}
-	
+
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode != KeyEvent.KEYCODE_MENU) return true;
 		return false;
 	}
-	
+
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		Button pressed = (Button)v;
-
 		switch (pressed.getId())
 		{
 			case R.string.game1Level1: 	launchActivity(1,0);
@@ -159,8 +185,8 @@ public class Main extends Activity implements OnClickListener{
 			case R.string.game2Level4: 	launchActivity(2,3);
 			break;
 			case R.string.aboutButton:	Intent aboutWindow = new Intent (this,About.class);
-										startActivity(aboutWindow);
-										break;
+			startActivity(aboutWindow);
+			break;
 			case R.string.airplaneMode:	checkAirplaneMode();
 			break;
 			case R.string.music:		musicPlayerService.setEnabled(!musicPlayerService.isEnabled()); drawCorrectMusicButton();
@@ -246,7 +272,7 @@ public class Main extends Activity implements OnClickListener{
 			settingElements[2].getButton().setBackgroundResource(R.drawable.music_off);
 		}	
 	}
-	
+
 	private void checkAirplaneMode()
 	{
 		boolean isEnabled = Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 1;

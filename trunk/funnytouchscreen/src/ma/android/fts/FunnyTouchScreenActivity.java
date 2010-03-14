@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -661,7 +662,9 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 		BitmapDrawable bd = ((BitmapDrawable)absLayout.getBackground());
 		if (bd != null) {
 			absLayout.setBackgroundDrawable(null);
-			bd.getBitmap().recycle();
+			if (bd.getBitmap()!=null) {
+				bd.getBitmap().recycle();
+			}
 		}
 		unbindService(conn);
 		timerUsers--;
