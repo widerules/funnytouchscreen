@@ -16,7 +16,7 @@ public class AnimationFactory {
 	
 	final static long ANIMATION_DURATION = 4000;
 	
-	private static final int ANIMATION_IMAGES = 15; 
+	private static final int ANIMATION_IMAGES = 25; 
 	
 	private static int[] animationImages = new int[ANIMATION_IMAGES];
 	static {

@@ -7,6 +7,11 @@
     <string name="music">Music</string>
     <string name="on">ON</string>
     <string name="exit">Exit</string>
+    <string name="rate">Rate &amp; Comment</string>
+    <string name="spread">Tell a friend</string>
+    <string name="mail_text">Hi, I have discovered this cool Android game for toddlers you might be interested in:\nhttp://repository.m-atelier.cz/funny-touch-screen.html\nHope you will enjoy it!\nBye!</string>
+<!--    <string name="mail_subject">game for toddlers</string>-->
+	<string name="mail_title">Tell your friends!</string>
     <string name="back">Back</string>
     <string name="off">OFF</string>
     <string name="about">About...</string>
@@ -34,6 +39,7 @@
     <string name="gameHelp24">Hide pairs of buttons in the right order.</string>
     
     <string name="missingMultimedia">Multimedia files are missing, restart the game please.</string>
+    <string name="missingMusic">Music files are missing, sorry no tunes for you. Let the game download all it's content please!</string>
     
     
     <string name="downloadTitle">Downloading</string>
