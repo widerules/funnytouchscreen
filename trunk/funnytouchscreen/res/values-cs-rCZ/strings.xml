@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Funny Touch Screen</string>	
+    <string name="starButton">Start</string>
+    <string name="exitButton">Konec</string>
+    <string name="airplaneMode">Mód "letadlo"</string>
+    <string name="music">Hudba</string>
+    <string name="on">ZAP.</string>
+    <string name="exit">Konec</string>
+    <string name="rate">Hodnotit a komentovat</string>
+    <string name="spread">Doporučit</string>
+    <string name="mail_text">Ahoj,\nnasel jsem prima hru pro deti na Androidu, mohla by te zajimat:\nhttp://repository.m-atelier.cz/funny-touch-screen.html\nDoufam, ze se ti bude libit!\nAhoj!</string>
+<!--    <string name="mail_subject">game for toddlers</string>-->
+	<string name="mail_title">Řekněte o hře svým známým!</string>
+    <string name="back">Zpět</string>
+    <string name="off">VYP.</string>
+    <string name="about">O hře ...</string>
+    <string name="game1Level1">game1Level1</string>
+    <string name="game2Level1">game2Level1</string>
+    <string name="game1Level2">game1Level2</string>
+    <string name="game2Level2">game2Level2</string>
+    <string name="game1Level3">game1Level3</string>
+   	<string name="game2Level3">game2Level3</string>
+    <string name="game1Level4">game1Level4</string>
+    <string name="game2Level4">game2Level4</string>
+    <string name="airplaneModeOn">Zapínám mód "letadlo".</string>
+    <string name="airplaneModeOff">Vypínám mód "letadlo".</string>
+    <string name="musicOn">Zapínám hudbu.</string>
+    <string name="musicOff">Vypínám hudbu.</string>
+    <string name="atDifficulty">na úrovni obtížnosti</string>
+    <string name="aboutButton">Ano, souhlasím</string>
+    <string name="gameHelp11">Schovej všechna tlačítka a řekni mi, co je na obrázku.</string>
+    <string name="gameHelp12">Schovej všechna tlačítka, ale můžeš ťuknout jen tam, kde je kytička.</string>
+    <string name="gameHelp13">Schovej tlačítka ve správném pořadí. Jak daleko se dostaneš?</string>
+    <string name="gameHelp14">Schovej tlačítka ve správném pořadí. Znáš všechna čísla?</string>
+    <string name="gameHelp21">Schovej tlačítka, na kterých je kytička. Jakou mají barvu?</string>
+    <string name="gameHelp22">Umíš barvy? Najdi tlačítka, která mají stejnou barvu.</string>
+    <string name="gameHelp23">Schovej dvojice tlačítek ve správném pořadí.</string>
+    <string name="gameHelp24">Schovej dvojice tlačítek ve správném pořadí.</string>
+    
+    <string name="missingMultimedia">Chybí soubory s obrázky a hudbou, restartujte hru prosím.</string>
+    <string name="missingMusic">Chybí soubory s hudbou. Nechejte prosím hru stáhnout všechny potřebné soubory.</string>
+    
+    <string name="downloadTitle">Stahuji</string>
+    <string name="downloadChecking">Kontroluji repozitář souborů na aktualizace</string>
+    <string name="downloadFoundFiles">Nalezeno {0} souborů, celková velikost ke stažení je {1} kB. Soubory budou uloženy na SD kartě telefonu.</string>
+    <string name="downloadErrorTitle">Zatr...!</string>
+    <string name="downloadDownload">budiž, stáhnout</string>
+    <string name="downloadCancel">ne, později</string>
+    <string name="downloadOkSomeFilesAreThere">Dobrá, nové soubory tedy stáhneme později.</string>
+    <string name="downloadMustDownload">Pardon, ale bez těchto souborů nejde hru spustit.</string>
+    <string name="downloadDownloadingFiles">Stahuji {0} souborů o celkové velikosti {1} kB.</string>
+    <string name="downloadFinished">Stahování bylo úspěšně dokončeno.</string>
+    <string name="downloadError">Stahování se nepovedlo, zkuste to prosím později znovu.</string>
+    <string name="downloadErrorConnect">Nelze se připojit k repozitáři a zkontrolovat soubory. Spusťte hru prosím znovu, až bude telefon připojen k internetu.</string>
+    <string name="downloadErrorWrite">Nelze zapisovat soubory, zkontrolujte prosím Vaši SD kartu.</string>
+    <string name="downloadNothingNew">Žádné nové soubory, zkusíme to za pár dní znovu.</string>
+    
+</resources>

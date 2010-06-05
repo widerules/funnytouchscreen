@@ -70,24 +70,28 @@ public class MusicPlayerService extends Service {
 			return;
 		}
 		mp = MediaPlayer.create(this, Uri.fromFile(musics.get(currentSongNumber)));
-		mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
-			public void onCompletion(MediaPlayer mp) 
-			{
-				currentSongNumber++;
-				if (currentSongNumber == musics.size()){
-					currentSongNumber = 0;
+		if (mp == null) {
+			stopSelf();
+		} else {
+			mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
+				public void onCompletion(MediaPlayer mp) 
+				{
+					currentSongNumber++;
+					if (currentSongNumber == musics.size()){
+						currentSongNumber = 0;
+					}
+					mp.reset();
+					try {
+						mp.setDataSource(MusicPlayerService.this, Uri.fromFile(musics.get(currentSongNumber)));
+						mp.prepare();
+						mp.start();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-				mp.reset();
-				try {
-					mp.setDataSource(MusicPlayerService.this, Uri.fromFile(musics.get(currentSongNumber)));
-					mp.prepare();
-					mp.start();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		updatePlayerState();
+			});
+			updatePlayerState();
+		}
 	}
 	public void playMusic()
 	{
