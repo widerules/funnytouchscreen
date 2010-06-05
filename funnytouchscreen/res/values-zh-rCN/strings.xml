@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Funny Touch Screen</string>	
+    <string name="starButton">开始</string>
+    <string name="exitButton">退出</string>
+    <string name="airplaneMode">飞行模式</string>
+    <string name="music">音乐</string>
+    <string name="on">开</string>
+    <string name="exit">退出</string>
+    <string name="rate">评级 &amp; 评论</string>
+    <string name="spread">告诉一个朋友</string>
+    <string name="mail_text">嗨，我刚刚发现了一个很酷的Android游戏，也许你也会喜欢哦，它在这儿：\nhttp://repository.m-atelier.cz/funny-touch-screen.html\n希望你也能爱上这个游戏！\n拜！</string>
+<!--    <string name="mail_subject">game for toddlers</string>-->
+	<string name="mail_title">告诉您的朋友们！</string>
+    <string name="back">返回</string>
+    <string name="off">关</string>
+    <string name="about">关于...</string>
+    <string name="game1Level1">game1Level1</string>
+    <string name="game2Level1">game2Level1</string>
+    <string name="game1Level2">game1Level2</string>
+    <string name="game2Level2">game2Level2</string>
+    <string name="game1Level3">game1Level3</string>
+   	<string name="game2Level3">game2Level3</string>
+    <string name="game1Level4">game1Level4</string>
+    <string name="game2Level4">game2Level4</string>
+    <string name="airplaneModeOn">设置打开飞行模式</string>
+    <string name="airplaneModeOff">设置关闭飞行模式</string>
+    <string name="musicOn">打开音乐</string>
+    <string name="musicOff">关闭音乐</string>
+    <string name="atDifficulty">在难度等级</string>
+    <string name="aboutButton">好了，我同意</string>
+    <string name="gameHelp11">隐藏所有的按钮并告诉我 - 图片上有什么？</string>
+    <string name="gameHelp12">隐藏这些按钮。您仅能点击那个带花的。</string>
+    <string name="gameHelp13">以正确的顺序隐藏这些按钮。您能走多远？</string>
+    <string name="gameHelp14">以正确的顺序隐藏所有按钮。您知道所有的数字？</string>
+    <string name="gameHelp21">以鲜花隐藏所有按钮。它们都是什么颜色？</string>
+    <string name="gameHelp22">您能辨别颜色吧？找出同样颜色的按钮。</string>
+    <string name="gameHelp23">以正确的顺序隐藏按钮。</string>
+    <string name="gameHelp24">以正确的顺序隐藏按钮。</string>
+    
+    <string name="missingMultimedia">多媒体文件丢失，请重启游戏。</string>
+    <string name="missingMusic">语音文件丢失，抱歉将无法为你提供音效。请让游戏下载它所有的内容！</string>
+    
+    
+    <string name="downloadTitle">下载中</string>
+    <string name="downloadChecking">正在检查储存库，查看是否有更新多媒体文件。</string>
+    <string name="downloadFoundFiles">发现了 {0} 个文件，总共下载量是 {1} kB。文件将会保存到您的SD卡。</string>
+    <string name="downloadErrorTitle">D\'哦！</string>
+    <string name="downloadDownload">确定，下载、</string>
+    <string name="downloadCancel">不，以后再说</string>
+    <string name="downloadOkSomeFilesAreThere">确定，稍后仅下载更新的多媒体文件。</string>
+    <string name="downloadMustDownload">抱歉，您无法再没有多媒体文件的情况下进行游戏。</string>
+    <string name="downloadDownloadingFiles">正在下载 {0} 个文件，需要下载的总大小是 {1} kB.</string>
+    <string name="downloadFinished">下载已经成功完成！</string>
+    <string name="downloadError">下载错误，请稍后重启游戏</string>
+    <string name="downloadErrorConnect">无法连接到储存库，无法检查是否有新的多媒体文件。请在连接至网络后再次运行本游戏。</string>
+    <string name="downloadErrorWrite">无法写入文件，请检查您的SD卡</string>
+    <string name="downloadNothingNew">没有更新的多媒体文件，请几天后再检查。</string>
+    
+</resources>

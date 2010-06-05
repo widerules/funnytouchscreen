@@ -653,7 +653,9 @@ public class FunnyTouchScreenActivity extends Activity implements OnClickListene
 
 	@Override
 	public void onStop() {
-		musicPlayerService.stopMusic();
+		if (musicPlayerService != null) {
+			musicPlayerService.stopMusic();
+		}
 		super.onStop();
 	}
 
